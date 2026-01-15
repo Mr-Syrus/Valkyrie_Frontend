@@ -1,117 +1,67 @@
 <template>
-  <div class="alert-container">
-    <div class="alert-header">
-      <span class="car-number">Машина с номером BNK 568</span>
-      <div class="event-badge">
-        <img src="@/assets/fire-icon.svg" alt="Пожар" class="event-icon" />
-        <span class="event-text">ПОЖАР</span>
-      </div>
-    </div>
+  <div class="popup">
+    <div class="popup-content">
+      <img src="@/assets/fire-icon.svg" alt="fire icon" class="icon" />
+      <p class="center-text">Машина с номером &lt;BNK 568&gt;</p>
+      <p class="center-text">&lt;пожар&gt;</p>
+      <p class="center-text">местоположение</p>
+      <p class="center-text">объект &lt;FHDU1823&gt;</p>
 
-    <div class="location-section">
-      <span class="location-label">местоположение</span>
-      <span class="object-code">объект FHDU1823</span>
-    </div>
-
-    <div class="alert-footer">
       <button class="reply-btn">Ответить</button>
-      <div class="redirect-timer">
-        Будет перенаправлено выше через 19:46
-      </div>
+
+      <p class="small-text">Будет перенаправлено выше через 19:46</p>
     </div>
   </div>
 </template>
 
+<script setup>
+// Скриптов пока не требуется
+</script>
+
 <style scoped>
-.alert-container {
-  border: 2px solid #e53935;
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 10px solid #FF0000;
   border-radius: 8px;
-  padding: 16px;
-  font-family: 'Arial', sans-serif;
-  max-width: 400px;
-  background-color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  min-width: 250px;
 }
 
-.alert-header {
+.popup-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
+  gap: 4px; /* было 10px, уменьшили */
 }
 
-.car-number {
-  font-weight: bold;
-  font-size: 16px;
-  color: #333;
-}
-
-.event-badge {
-  display: flex;
-  align-items: center;
-  background-color: #ffebee;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.event-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 6px;
-}
-
-.event-text {
-  color: #e53935;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.location-section {
-  margin-bottom: 16px;
-  padding: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-}
-
-.location-label {
-  display: block;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 4px;
-}
-
-.object-code {
-  font-weight: bold;
-  color: #333;
-  font-size: 16px;
-}
-
-.alert-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.center-text {
+  text-align: center;
+  font-weight: 500;
+  margin: 1px 0; /* небольшой вертикальный отступ */
 }
 
 .reply-btn {
-  background-color: #4caf50;
-  color: white;
+  background-color: #40FF46;
+  color: black;
   border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  font-size: 14px;
 }
 
 .reply-btn:hover {
-  background-color: #388e3c;
+  opacity: 0.9;
 }
 
-.redirect-timer {
-  color: #666;
-  font-size: 14px;
-  font-weight: bold;
+.small-text {
+  font-size: 12px;
+  color: #555;
+  margin-top: 5px;
+  text-align: center;
 }
 </style>
