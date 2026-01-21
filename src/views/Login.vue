@@ -2,12 +2,12 @@
   <div class="row vh-100" id="login-page">
     <div class="left-side col-6 d-flex flex-column justify-content-center align-items-center p-4">
       <img src="@/assets/big_logo.svg" alt="Logo" class="mb-4" style="width: 80px; height: auto;">
-      <form class="w-100" @submit.prevent="login">
+      <form class="w-100">
         <div class="mb-3">
-          <input type="text" class="form-control" placeholder="Логин" v-model="username">
+          <input type="text" class="form-control" placeholder="Логин">
         </div>
         <div class="mb-3">
-          <input type="password" class="form-control" placeholder="Пароль" v-model="password">
+          <input type="password" class="form-control" placeholder="Пароль">
         </div>
         <button type="submit" class="btn btn-warning w-100">Вход</button>
       </form>
