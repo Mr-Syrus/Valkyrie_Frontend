@@ -1,4 +1,25 @@
 <script setup>
+import {onMounted, ref} from 'vue';
+import {get_user, logout} from "@/api/Auth.js";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+let username = ref("");
+
+onMounted(async () => {
+  const res = await get_user();
+  username.value = res.username
+});
+
+async function volumeClick(){
+
+}
+
+async function logoutClick(){
+  await logout()
+  await router.push({name: 'login'});
+}
+
 </script>
 
 <template>
@@ -6,27 +27,21 @@
     <!-- Левая часть -->
     <div class="d-flex align-items-center">
       <router-link to="/" class="d-flex align-items-center text-decoration-none text-light me-3">
-        <img src="@/assets/logo_min_gren.svg" alt="fire icon" class="icon" />
+        <img src="@/assets/logo_min_gren.svg" alt="fire icon" class="icon"/>
       </router-link>
-
       <div class="d-flex align-items-center text-decoration-none text-light me-3">
-        <span class="fw-bold">&lt;Username&gt;</span>
+        <span class="fw-bold">{{ username }}</span>
       </div>
-
-<!--      <router-link to="/support" class="d-flex align-items-center text-decoration-none text-light me-3">-->
-<!--        <span class="fw-bold">поддержка</span>-->
-<!--      </router-link>-->
-
     </div>
 
-
     <div class="ms-auto d-flex align-items-center">
-      <router-link to="/" class="d-flex align-items-center text-decoration-none text-light me-3">
-        <img src="@/assets/volume.svg" alt="fire icon" class="icon" />
-      </router-link>
-      <router-link to="/" class="d-flex align-items-center text-decoration-none text-light me-3">
-      <img src="@/assets/logout.svg" alt="fire icon" class="icon" />
-    </router-link>
+<!--      <button class="btn p-0 d-flex align-items-center text-light me-3" @click="volumeClick">-->
+<!--        <img src="@/assets/volume.svg" alt="volume icon" class="icon"/>-->
+<!--      </button>-->
+
+      <button class="btn p-0 d-flex align-items-center text-light me-3" @click="logoutClick">
+        <img src="@/assets/logout.svg" alt="logout icon" class="icon"/>
+      </button>
     </div>
   </nav>
 </template>

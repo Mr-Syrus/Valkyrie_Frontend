@@ -4,13 +4,28 @@ import PopApTrivogaAi from '@/components/pop_ap_trivoga_ai.vue'
 import PopApTrivogaAi2 from '@/components/pop_ap_trivoga_ai_2.vue'
 import PopApTrivoga from '@/components/pop_ap_trivoga.vue'
 import Navbar from '@/components/Navbar.vue'
+import Home from "@/views/Home.vue";
+import NotFound from "@/views/NotFound.vue";
 
 const routes = [
+    { path: '/', name: 'home', component: Home },
     { path: '/login', name: 'login', component: Login },
-    { path: '/pop_ap_trivoga_ai', name: 'pop_ap_trivoga_ai', component: PopApTrivogaAi },
-    { path: '/pop_ap_trivoga_ai_2', name: 'pop_ap_trivoga_ai_2', component: PopApTrivogaAi2 },
-    { path: '/pop_ap_trivoga', name: 'pop_ap_trivoga', component: PopApTrivoga },
-    { path: '/navbar', name: 'Navbar', component: Navbar },
+
+    { path: '/cars', name: 'cars', component: Cars },
+    { path: '/users', name: 'users', component: Users },
+    { path: '/companies', name: 'companies', component: Companies },
+    { path: '/platform', name: 'platform', component: Platform },
+
+    // { path: '/pop_ap_trivoga_ai', name: 'pop_ap_trivoga_ai', component: PopApTrivogaAi },
+    // { path: '/pop_ap_trivoga_ai_2', name: 'pop_ap_trivoga_ai_2', component: PopApTrivogaAi2 },
+    // { path: '/pop_ap_trivoga', name: 'pop_ap_trivoga', component: PopApTrivoga },
+    // { path: '/navbar', name: 'Navbar', component: Navbar },
+
+    {
+        path: '/:pathMatch(.*)*',  // ловит все несуществующие пути
+        name: 'NotFound',
+        component: NotFound
+    }
 ]
 
 export default createRouter({
