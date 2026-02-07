@@ -1,6 +1,5 @@
-
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   sections: {
@@ -8,17 +7,38 @@ const props = defineProps({
     required: true
   }
 })
+const emit = defineEmits(['update:sections'])
 
 const isCollapsed = ref(false)
 const searchQuery = ref('')
+
+// Локальная реактивная копия секций
+const localSections = ref([])
+
+// Обновляем локальные секции при изменении пропсов
+watch(
+    () => props.sections,
+    (newSections) => {
+      localSections.value = newSections.map(section => ({
+        ...section,
+        open: section.open ?? false,
+        items: section.items.map(item => ({
+          ...item,
+          checked: item.checked ?? false,
+          q: item.q ?? (item.type === 'range' ? { min: item.min, max: item.max } : '')
+        }))
+      }))
+    },
+    { immediate: true, deep: true }
+)
 
 const toggleCollapse = () => {
   isCollapsed.value = !isCollapsed.value
 }
 
 const filteredSections = computed(() => {
-  if (!searchQuery.value) return props.sections
-  return props.sections
+  if (!searchQuery.value) return localSections.value
+  return localSections.value
       .map(section => ({
         ...section,
         items: section.items.filter(item =>
@@ -27,6 +47,14 @@ const filteredSections = computed(() => {
       }))
       .filter(section => section.items.length > 0)
 })
+
+watch(
+    localSections,
+    (newVal) => {
+      emit('update:sections', newVal)
+    },
+    { deep: true }
+)
 </script>
 
 <template>
@@ -53,6 +81,7 @@ const filteredSections = computed(() => {
       />
     </div>
 
+    {{localSections}}
     <!-- Контент -->
     <div v-if="!isCollapsed">
       <div v-for="section in filteredSections" :key="section.title" class="mb-2">
@@ -86,7 +115,6 @@ const filteredSections = computed(() => {
 
             <!-- Поля для активного чекбокса -->
             <div v-if="item.checked" class="ms-3 mt-1">
-              <!-- Диапазон -->
               <template v-if="item.type === 'range'">
                 <input
                     type="number"
@@ -109,7 +137,6 @@ const filteredSections = computed(() => {
               <template v-else-if="item.type === 'null'">
               </template>
 
-              <!-- Обычное поле -->
               <template v-else>
                 <input
                     type="text"
