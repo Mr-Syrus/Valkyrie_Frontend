@@ -1,6 +1,6 @@
 
 <script setup>
-import {reactive, computed, watch, onMounted} from 'vue'
+import {reactive, computed, watch} from 'vue'
 import FiltersPanel from '@/components/FiltersPanel.vue'
 
 const sections = reactive([
@@ -169,9 +169,18 @@ async function sendRequest(data) {
 }
 
 
-onMounted(async () => {
-  await sendRequest(sections)
-});
+// Автоматически собираем q из sections
+const q = computed(() => {
+  const result = {}
+  sections.forEach(section => {
+    section.items.forEach(item => {
+      if (item.checked) {
+        result[item.teg] = item.q
+      }
+    })
+  })
+  return result
+})
 </script>
 
 
@@ -179,39 +188,15 @@ onMounted(async () => {
   <div class="container-fluid">
     <div class="row">
       <!-- Левая панель -->
-      <FiltersPanel :sections="sections"/>
+      <FiltersPanel :sections="sections" />
 
       <!-- Правая часть -->
       <div class="col p-3">
-        <!-- Кнопка справа -->
-        <div class="d-flex justify-content-end mb-2">
-          <button class="btn" :style="{ backgroundColor: 'var(--color-forms)', color: '#000' }">
-            Добавить компанию
-          </button>
-        </div>
+        <h4>Правая часть</h4>
+        <p>Здесь будет основной контент.</p>
 
-        <!-- Полоска под кнопкой -->
-        <div class="bg-secondary w-100 mb-3" style="height: 4px;"></div>
-
-        <!-- Элементы-заглушки -->
-        <div class="container">
-          <div class="row">
-            <div class="col-3 mb-3" v-for="item in items" :key="item.id">
-              <div class="position-relative p-3" style="background-color: #D9D9D9; height: 100px;">
-                <!-- Левый верхний текст -->
-                <div class="text-start">
-                  {{ item }}
-                </div>
-                <!-- Справа внизу иконка -->
-                <img src="@/assets/edit.svg"
-                     class="position-absolute"
-                     style="bottom: 5px; right: 5px; width: 20px; height: 20px;"
-                     @click="editItem(item.id)">
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <!-- Отладка: что реально уходит -->
+        <pre>{{ q }}</pre>
       </div>
     </div>
   </div>

@@ -19,7 +19,8 @@ const squares = {
   "Машины": "/cars",
   "Сотрудники": "/users",
   "Компании": "/companies",
-  "Карьеры": "/platform"
+  "Карьеры": "/platform",
+  "Сообщение": "/message"
 };
 </script>
 
