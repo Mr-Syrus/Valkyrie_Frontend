@@ -1,10 +1,4 @@
 import {api} from "@/api/main_axios.js";
-import Cookies from 'js-cookie';
-
-function hasSessionCookie() {
-    return !!Cookies.get('session');
-}
-
 
 export async function all_name_companies() {
     try {
@@ -32,7 +26,23 @@ export async function crete_company(name, parents) {
         return null;
     }
 }
-export async function search_by_parents(ids) {
+
+export async function put_company(id,name, parents) {
+    if (parents==="")
+        parents= null
+    try {
+        const response = await api.put(
+            '/companies',
+            {id, name, parents}
+        );
+        return response.data;
+    } catch (error) {
+        console.error('ошибка', error);
+        return null;
+    }
+}
+
+export async function companies_search_by_parents(ids) {
     try {
         const response = await api.get(
             '/companies/search',
