@@ -1,14 +1,14 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import {ref, computed, onMounted} from 'vue'
 import * as bootstrap from 'bootstrap'
-import { all_name_companies, crete_company, search_by_parents } from '@/api/Companies.js'
+import {all_name_companies, crete_company, put_company, companies_search_by_parents} from '@/api/Companies.js'
 
 // === Данные для компаний ===
 const items_companies = ref([])
 
 // === Фильтры ===
 const sections = ref([
-  { title: 'Материнская компания', open: false, items: [] }
+  {title: 'Материнская компания', open: false, items: []}
 ])
 
 const items = () => sections.value[0].items
@@ -31,7 +31,7 @@ async function timeSendRequest() {
 
 async function sendRequest() {
   const activeIds = items().filter(i => i.checked).map(i => i.id)
-  items_companies.value = await search_by_parents(activeIds)
+  items_companies.value = await companies_search_by_parents(activeIds)
 }
 
 // === Загрузка компаний ===
@@ -49,26 +49,29 @@ async function loadingCompanies() {
 }
 
 // === Форма добавления компании ===
-const form = ref({ name: '', parent_company: '' })
+const form = ref({name: '', parent_company: ''})
 const error_form = ref("")
 const form_id = ref(null)
 
 function resetForm() {
-  form.value = { name: '', parent_company: '' }
+  form.value = {name: '', parent_company: ''}
   error_form.value = ""
   form_id.value = null
 }
 
 async function submitForm() {
-  if (form.value.parent_company !== "") {
+  if (form.value.parent_company != null && form.value.parent_company.trim() !== "") {
     const exists = items().some(item => item.label === form.value.parent_company)
     if (!exists) {
       error_form.value = 'Имя материнской компании неправильное.'
       return
     }
   }
-
-  await crete_company(form.value.name, form.value.parent_company)
+  if (form_id.value == null) {
+    await crete_company(form.value.name, form.value.parent_company)
+  } else {
+    await put_company(form_id.value, form.value.name, form.value.parent_company)
+  }
   await loadingCompanies()
 
   const modalEl = document.getElementById('addCompanyModal')
@@ -103,14 +106,14 @@ function hideDropdown() {
 // === Редактирование ===
 function editItem(id) {
   console.log('Редактируем компанию', id)
-  form_id.value = id
 
   const company = items_companies.value.find(item => item.companyId === id)
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
   modalInstance.show()
 
-  form.value = { name: company.companyName, parent_company: company.parentsCompanyName }
+  form.value = {name: company.companyName, parent_company: company.parentsCompanyName}
+  form_id.value = id
 
 }
 
@@ -241,7 +244,8 @@ onMounted(() => {
   </div>
 
   <!-- Модальное окно -->
-  <div class="modal fade" id="addCompanyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal fade" id="addCompanyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+       data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -253,7 +257,7 @@ onMounted(() => {
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Название компании<span class="text-danger">*</span></label>
-              <input v-model="form.name" type="text" class="form-control" required />
+              <input v-model="form.name" type="text" class="form-control" required/>
             </div>
 
             <div class="mb-3">
@@ -266,7 +270,8 @@ onMounted(() => {
                   @focus="showDropdown = true"
                   @blur="hideDropdown"
               />
-              <ul v-if="showDropdown && filteredItems.length" class="list-group position-absolute w-100" style="z-index: 1000;">
+              <ul v-if="showDropdown && filteredItems.length" class="list-group position-absolute w-100"
+                  style="z-index: 1000;">
                 <li
                     v-for="item in filteredItems"
                     :key="item.id"
