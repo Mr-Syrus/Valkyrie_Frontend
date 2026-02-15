@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import * as bootstrap from 'bootstrap'
 import {all_name_companies, crete_company, put_company, companies_search_by_parents} from '@/api/Companies.js'
 import {all_name_post, crete_user, put_user, user_search} from "@/api/Users.js";
@@ -186,7 +186,16 @@ function toggleCollapse() {
 onMounted(() => {
   loadingCompanies()
   const modalEl = document.getElementById('addCompanyModal')
-  modalEl.addEventListener('show.bs.modal', resetForm)
+  if (modalEl) {
+    modalEl.addEventListener('show.bs.modal', resetForm)
+  }
+})
+
+onUnmounted(() => {
+  const modalEl = document.getElementById('addCompanyModal')
+  if (modalEl) {
+    modalEl.removeEventListener('show.bs.modal', resetForm)
+  }
 })
 </script>
 
@@ -261,7 +270,7 @@ onMounted(() => {
               data-bs-toggle="modal"
               data-bs-target="#addCompanyModal"
           >
-            Добавить обект
+            Добавить объект
           </button>
         </div>
 
@@ -287,7 +296,7 @@ onMounted(() => {
                 <div class="col-3 mb-3" v-for="platform in platforms" :key="platform.id">
                   <div class="position-relative p-3"
                        style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
-                    <div class="text-start">Name: {{ platform.name }}</div>
+                    <div class="text-start">Название: {{ platform.name }}</div>
                     <img
                         src="@/assets/edit.svg"
                         class="position-absolute"
@@ -310,29 +319,29 @@ onMounted(() => {
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Добавить обект</h5>
+          <h5 class="modal-title">Добавить объект</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
         <form @submit.prevent="submitForm">
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">name<span class="text-danger">*</span></label>
+              <label class="form-label">Название<span class="text-danger">*</span></label>
               <input v-model="form.name" type="text" class="form-control" required/>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">address<span class="text-danger">*</span></label>
+              <label class="form-label">Адрес<span class="text-danger">*</span></label>
               <input v-model="form.address" type="text" class="form-control" required/>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">startDate<span class="text-danger">*</span></label>
+              <label class="form-label">Дата начала<span class="text-danger">*</span></label>
               <input v-model="form.startDate" type="datetime-local" class="form-control" required/>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">endDate</label>
+              <label class="form-label">Дата окончания</label>
               <input v-model="form.endDate" type="datetime-local" class="form-control"/>
             </div>
 

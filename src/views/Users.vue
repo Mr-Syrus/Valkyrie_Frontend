@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import * as bootstrap from 'bootstrap'
 import {all_name_companies, crete_company, put_company, companies_search_by_parents} from '@/api/Companies.js'
 import {all_name_post, crete_user, put_user, user_search} from "@/api/Users.js";
@@ -245,7 +245,16 @@ onMounted(() => {
   loadingCompanies()
   loadingPosts()
   const modalEl = document.getElementById('addCompanyModal')
-  modalEl.addEventListener('show.bs.modal', resetForm)
+  if (modalEl) {
+    modalEl.addEventListener('show.bs.modal', resetForm)
+  }
+})
+
+onUnmounted(() => {
+  const modalEl = document.getElementById('addCompanyModal')
+  if (modalEl) {
+    modalEl.removeEventListener('show.bs.modal', resetForm)
+  }
 })
 </script>
 
@@ -379,7 +388,7 @@ onMounted(() => {
         <form @submit.prevent="submitForm">
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">Никнеим<span class="text-danger">*</span></label>
+              <label class="form-label">Никнейм<span class="text-danger">*</span></label>
               <input v-model="form.username" type="text" class="form-control" required/>
             </div>
 
@@ -403,8 +412,8 @@ onMounted(() => {
             </div>
 
             <div class="mb-3">
-              <label class="form-label">decommissioned</label>
-              <input v-model="form.decommissioned" type="checkbox" class=""/>
+              <label class="form-label">Уволен</label>
+              <input v-model="form.decommissioned" type="checkbox" class="form-check-input ms-2"/>
             </div>
 
             <div class="mb-3">

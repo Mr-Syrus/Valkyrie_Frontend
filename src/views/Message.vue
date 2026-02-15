@@ -368,8 +368,8 @@ onMounted(async () => {
                 <div class="col-4 mb-3" v-for="msg in messages" :key="msg.event.id">
                   <div class="position-relative p-3"
                        :style="{ backgroundColor: msg.history ? '#D4EDDA' : '#F8D7DA', height: '200px', borderRadius: '4px' }">
-                    <div class="text-start"><strong>Тип:</strong> {{ msg.event.typeEvent?.name || 'Н/Д' }}</div>
-                    <div class="text-start"><strong>Машина:</strong> {{ msg.event.car?.number || 'Н/Д' }}</div>
+                    <div class="text-start"><strong>Тип:</strong> {{ msg.event.typeEvent?.name || 'Не указан' }}</div>
+                    <div class="text-start"><strong>Машина:</strong> {{ msg.event.car?.number || 'Не указана' }}</div>
                     <div class="text-start"><strong>Дата:</strong> {{ new Date(msg.event.dateTime).toLocaleString('ru-RU') }}</div>
                     <div class="text-start"><strong>Координаты:</strong> {{ msg.event.latitude }}, {{ msg.event.longitude }}</div>
                     <div class="text-start mt-2">

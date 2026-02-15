@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import * as bootstrap from 'bootstrap'
 import {all_name_companies, crete_company, put_company, companies_search_by_parents} from '@/api/Companies.js'
 
@@ -140,7 +140,16 @@ function toggleCollapse() {
 onMounted(() => {
   loadingCompanies()
   const modalEl = document.getElementById('addCompanyModal')
-  modalEl.addEventListener('show.bs.modal', resetForm)
+  if (modalEl) {
+    modalEl.addEventListener('show.bs.modal', resetForm)
+  }
+})
+
+onUnmounted(() => {
+  const modalEl = document.getElementById('addCompanyModal')
+  if (modalEl) {
+    modalEl.removeEventListener('show.bs.modal', resetForm)
+  }
 })
 </script>
 
@@ -227,7 +236,7 @@ onMounted(() => {
               <div class="position-relative p-3" style="background-color: #D9D9D9; height: 130px;">
                 <div class="text-start">Имя: {{ item.companyName }}</div>
                 <div class="text-start" v-if="item.parentsCompanyName">
-                  Отпучкавалась от: {{ item.parentsCompanyName }}
+                  Ответвилась от: {{ item.parentsCompanyName }}
                 </div>
                 <img
                     src="@/assets/edit.svg"

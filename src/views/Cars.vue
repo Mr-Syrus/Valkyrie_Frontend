@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import * as bootstrap from 'bootstrap'
 import {crete_cars, put_cars, cars_search, model_cars} from "@/api/Cars.js";
 import {platforms_search} from "@/api/Platforms.js";
@@ -392,7 +392,16 @@ onMounted(async () => {
   await sendRequest()
   
   const modalEl = document.getElementById('addCompanyModal')
-  modalEl.addEventListener('show.bs.modal', resetForm)
+  if (modalEl) {
+    modalEl.addEventListener('show.bs.modal', resetForm)
+  }
+})
+
+onUnmounted(() => {
+  const modalEl = document.getElementById('addCompanyModal')
+  if (modalEl) {
+    modalEl.removeEventListener('show.bs.modal', resetForm)
+  }
 })
 </script>
 
@@ -527,7 +536,7 @@ onMounted(async () => {
                   <div class="position-relative p-3"
                        style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
                     <div class="text-start">Номер: {{ car.number }}</div>
-                    <div class="text-start">Модель: {{ car.modelCar?.name || 'Н/Д' }}</div>
+                    <div class="text-start">Модель: {{ car.modelCar?.name || 'Не указана' }}</div>
                     <img
                         src="@/assets/edit.svg"
                         class="position-absolute"
