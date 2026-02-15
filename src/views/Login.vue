@@ -12,7 +12,7 @@ async function onSubmit(e) {
   e.preventDefault()
   var data = await login(username.value, password.value);
   if (data == null){
-    console.log("нет акаунтов")
+    console.log("Нет аккаунтов")
   } else
     router.push({name: 'home'});
 }
