@@ -1,14 +1,18 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue'
 import * as bootstrap from 'bootstrap'
-import {all_name_companies, crete_company, put_company, companies_search_by_parents} from '@/api/Companies.js'
-import {all_name_post, crete_user, put_user, user_search} from "@/api/Users.js";
-import {crete_platforms, platforms_search, put_platforms} from "@/api/Platforms.js";
-import {cars_search} from "@/api/Cars.js";
+import {crete_cars, put_cars, cars_search, model_cars} from "@/api/Cars.js";
+import {platforms_search} from "@/api/Platforms.js";
 
-// === Данные для компаний ===
-const items_companies = ref([])
-const items_companies_ar = ref([])
+// === Данные для машин ===
+const items_cars = ref([])
+const items_cars_ar = ref([])
+
+// === Данные для моделей машин ===
+const items_model_cars = ref([])
+
+// === Данные для платформ ===
+const items_platforms = ref([])
 
 // === Фильтры ===
 const sections = ref([
@@ -196,41 +200,74 @@ function buildFilterJson(sections) {
 async function sendRequest() {
   const data = await cars_search(buildFilterJson(sections.value));
 
-  items_companies_ar.value = data
-  items_companies.value = data.reduce((acc, item) => {
-    const companyId = item.platformId;
-    if (!acc[companyId]) {
-      acc[companyId] = [];
+  // Бэкенд возвращает { Car: ..., Event: ... }, нужно извлечь car
+  items_cars_ar.value = data.map(item => item.car || item.Car || item)
+  items_cars.value = data.reduce((acc, item) => {
+    const car = item.car || item.Car || item
+    const platformId = car.platformId;
+    if (!acc[platformId]) {
+      acc[platformId] = [];
     }
 
-    acc[companyId].push(item);
+    acc[platformId].push(car);
     return acc;
   }, {});
 }
 
-// === Форма добавления компании ===
-function generator_clirn_from() {
-  return{
+// === Загрузка моделей машин ===
+async function loadingModelCars() {
+  const data = await model_cars()
+  items_model_cars.value = data
+}
+
+// === Загрузка платформ ===
+async function loadingPlatforms() {
+  const data = await platforms_search([], [])
+  if (data && Array.isArray(data)) {
+    items_platforms.value = data.map(i => ({
+      label: i.name || `Платформа ${i.id}`,
+      id: i.id
+    }))
+  }
+}
+
+// === Форма добавления машины ===
+function generator_clean_form() {
+  return {
     startDateOperation: new Date().toISOString().slice(0, 16),
     endDateOperation: null,
     modelCarId: null,
     platformId: null,
     number: "",
+    modelCarSearch: "",
+    platformSearch: "",
   }
 }
-const form = ref(generator_clirn_from())
+const form = ref(generator_clean_form())
 const error_form = ref("")
 const form_id = ref(null)
 
 function resetForm() {
-  form.value = generator_clirn_from()
+  form.value = generator_clean_form()
   error_form.value = ""
   form_id.value = null
 }
 
 async function submitForm() {
+  // Валидация: проверяем, что модель машины выбрана
+  if (!form.value.modelCarId) {
+    error_form.value = 'Пожалуйста, выберите модель машины из списка.'
+    return
+  }
+
+  // Валидация: проверяем, что платформа выбрана
+  if (!form.value.platformId) {
+    error_form.value = 'Пожалуйста, выберите платформу из списка.'
+    return
+  }
+
   if (form_id.value == null) {
-    await crete_platforms(
+    await crete_cars(
         form.value.startDateOperation,
         form.value.endDateOperation,
         form.value.modelCarId,
@@ -238,7 +275,7 @@ async function submitForm() {
         form.value.number
     )
   } else {
-    await put_platforms(
+    await put_cars(
         form_id.value,
         form.value.startDateOperation,
         form.value.endDateOperation,
@@ -247,6 +284,8 @@ async function submitForm() {
         form.value.number
     )
   }
+
+  await sendRequest()
 
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
@@ -257,32 +296,75 @@ async function submitForm() {
 }
 
 // === Автокомплит ===
+const filteredItemsModelCar = ref([])
+const filteredItemsPlatform = ref([])
+const showDropdownModelCar = ref(false)
+const showDropdownPlatform = ref(false)
 
 function filterItems() {
+  let query = (form.value.modelCarSearch || '').toLowerCase()
+  filteredItemsModelCar.value = items_model_cars.value
+      .filter(item => item.name.toLowerCase().includes(query))
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 5)
 
+  query = (form.value.platformSearch || '').toLowerCase()
+  filteredItemsPlatform.value = items_platforms.value
+      .filter(item => item.label.toLowerCase().includes(query))
+      .sort((a, b) => a.label.localeCompare(b.label))
+      .slice(0, 5)
 }
 
-function selectItemCompany(item) {
-  form.value.company = item.label
+function selectItemModelCar(item) {
+  form.value.modelCarId = item.id
+  form.value.modelCarSearch = item.name
+  showDropdownModelCar.value = false
+}
 
+function selectItemPlatform(item) {
+  form.value.platformId = item.id
+  form.value.platformSearch = item.label
+  showDropdownPlatform.value = false
 }
 
 function hideDropdown() {
-  setTimeout(() => showDropdownCompany.value = false, 100)
+  setTimeout(() => {
+    showDropdownModelCar.value = false
+    showDropdownPlatform.value = false
+  }, 100)
 }
 
 // === Редактирование ===
 function editItem(id) {
-  const platform = items_companies_ar.value.find(item => item.id === id)
+  const car = items_cars_ar.value.find(item => item.id === id)
+  console.log('Editing car:', car)
+  
+  if (!car) {
+    console.error('Car not found with id:', id)
+    return
+  }
+  
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
   modalInstance.show()
 
-  form.value = platform
-  form.value.startDate = platform.startDateOperation.slice(0, 16);
-  form.value.endDate = platform.endDateOperation ? platform.endDate.slice(0, 16) : null;
+  form.value = {
+    startDateOperation: car.startDateOperation ? car.startDateOperation.slice(0, 16) : '',
+    endDateOperation: car.endDateOperation ? car.endDateOperation.slice(0, 16) : null,
+    modelCarId: car.modelCarId,
+    platformId: car.platformId,
+    number: car.number,
+    modelCarSearch: car.modelCar?.name || '',
+    platformSearch: items_platforms.value.find(p => p.id === car.platformId)?.label || ''
+  }
+  console.log('Form after setting:', form.value)
   form_id.value = id
 }
+
+// Computed для маппинга ID платформы на название
+const items_platform_id_to_name = computed(() =>
+    Object.fromEntries(items_platforms.value.map(i => [i.id, i.label]))
+)
 
 // === Панель фильтров ===
 const isCollapsed = ref(false)
@@ -304,7 +386,11 @@ function toggleCollapse() {
   isCollapsed.value = !isCollapsed.value
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadingModelCars()
+  await loadingPlatforms()
+  await sendRequest()
+  
   const modalEl = document.getElementById('addCompanyModal')
   modalEl.addEventListener('show.bs.modal', resetForm)
 })
@@ -422,30 +508,31 @@ onMounted(() => {
 
         <div class="container">
           <div class="row">
-            <div v-for="(platforms, companyId) in items_companies" :key="companyId"
+            <div v-for="(cars, platformId) in items_cars" :key="platformId"
                  class="p-3 mb-4"
                  style="border: 2px solid var(--color-forms); border-radius: 8px; background-color: transparent;">
 
-              <!-- Верхняя часть блока: треугольник + имя компании -->
+              <!-- Верхняя часть блока: треугольник + имя платформы -->
               <div class="d-flex align-items-center mb-3">
                 <img src="@/assets/triangle.svg" alt="triangle"
                      style="width: 20px; height: 20px; margin-right: 8px;"/>
-                <div v-if="companyId">
-                  <span class="fw-bold">{{ items_company_id_in_name[companyId] }}</span> <!-- имя компании для теста -->
+                <div v-if="platformId">
+                  <span class="fw-bold">{{ items_platform_id_to_name[platformId] || `Платформа ID: ${platformId}` }}</span>
                 </div>
               </div>
 
-              <!-- Пользователи внутри компании -->
+              <!-- Машины внутри платформы -->
               <div class="row">
-                <div class="col-3 mb-3" v-for="platform in platforms" :key="platform.id">
+                <div class="col-3 mb-3" v-for="car in cars" :key="car.id">
                   <div class="position-relative p-3"
                        style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
-                    <div class="text-start">Name: {{ platform.name }}</div>
+                    <div class="text-start">Номер: {{ car.number }}</div>
+                    <div class="text-start">Модель: {{ car.modelCar?.name || 'Н/Д' }}</div>
                     <img
                         src="@/assets/edit.svg"
                         class="position-absolute"
                         style="bottom: 5px; right: 5px; width: 20px; height: 20px;"
-                        @click="editItem(platform.id)"
+                        @click="editItem(car.id)"
                     >
                   </div>
                 </div>
@@ -470,36 +557,66 @@ onMounted(() => {
         <form @submit.prevent="submitForm">
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">startDate<span class="text-danger">*</span></label>
-              <input v-model="form.startDate" type="datetime-local" class="form-control" required/>
+              <label class="form-label">Дата начала эксплуатации<span class="text-danger">*</span></label>
+              <input v-model="form.startDateOperation" type="datetime-local" class="form-control" required/>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">endDate</label>
-              <input v-model="form.endDate" type="datetime-local" class="form-control"/>
+              <label class="form-label">Дата окончания эксплуатации</label>
+              <input v-model="form.endDateOperation" type="datetime-local" class="form-control"/>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Компания</label>
+              <label class="form-label">Модель машины<span class="text-danger">*</span></label>
               <input
-                  v-model="form.company"
+                  v-model="form.modelCarSearch"
                   type="text"
                   class="form-control"
-                  @input="filterItems"
-                  @focus="showDropdownCompany = true"
+                  @input="form.modelCarId = null; filterItems()"
+                  @focus="showDropdownModelCar = true"
                   @blur="hideDropdown"
+                  placeholder="Начните вводить название модели..."
               />
-              <ul v-if="showDropdownCompany && filteredItemsCompany.length" class="list-group position-absolute w-100"
+              <ul v-if="showDropdownModelCar && filteredItemsModelCar.length" class="list-group position-absolute w-100"
                   style="z-index: 1000;">
                 <li
-                    v-for="item in filteredItemsCompany"
+                    v-for="item in filteredItemsModelCar"
                     :key="item.id"
                     class="list-group-item list-group-item-action"
-                    @mousedown.prevent="selectItemCompany(item)"
+                    @mousedown.prevent="selectItemModelCar(item)"
+                >
+                  {{ item.name }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Платформа<span class="text-danger">*</span></label>
+              <input
+                  v-model="form.platformSearch"
+                  type="text"
+                  class="form-control"
+                  @input="form.platformId = null; filterItems()"
+                  @focus="showDropdownPlatform = true"
+                  @blur="hideDropdown"
+                  placeholder="Начните вводить название платформы..."
+              />
+              <ul v-if="showDropdownPlatform && filteredItemsPlatform.length" class="list-group position-absolute w-100"
+                  style="z-index: 1000;">
+                <li
+                    v-for="item in filteredItemsPlatform"
+                    :key="item.id"
+                    class="list-group-item list-group-item-action"
+                    @mousedown.prevent="selectItemPlatform(item)"
                 >
                   {{ item.label }}
                 </li>
               </ul>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Номер машины<span class="text-danger">*</span></label>
+              <input v-model="form.number" type="text" class="form-control" required placeholder="Введите номер машины"/>
             </div>
           </div>
 

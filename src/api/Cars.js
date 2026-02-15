@@ -13,11 +13,11 @@ export async function model_cars() {
     }
 }
 
-export async function crete_cars(name, address, startDate, endDate, company) {
+export async function crete_cars(startDateOperation, endDateOperation, modelCarId, platformId, number) {
     try {
         const response = await api.post(
             '/cars',
-            {name, address, startDate, endDate, company}
+            {startDateOperation, endDateOperation, modelCarId, platformId, number}
         );
         return response.data;
     } catch (error) {
@@ -26,11 +26,11 @@ export async function crete_cars(name, address, startDate, endDate, company) {
     }
 }
 
-export async function put_cars(id, name, address, startDate, endDate, company) {
+export async function put_cars(id, startDateOperation, endDateOperation, modelCarId, platformId, number) {
     try {
         const response = await api.put(
             '/cars',
-            {id, name, address, startDate, endDate, company}
+            {id, startDateOperation, endDateOperation, modelCarId, platformId, number}
         );
         return response.data;
     } catch (error) {
