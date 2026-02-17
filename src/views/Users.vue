@@ -19,7 +19,8 @@ let posts = ref({})
 const items_company = () => sections.value[0].items
 const items_company_id_in_name = computed(() =>
     Object.fromEntries(items_company().map(i => [i.id, i.label]))
-);const items_post = () => sections.value[1].items
+);
+const items_post = () => sections.value[1].items
 
 let isProcessing = false
 let pending = false
@@ -118,7 +119,7 @@ function resetForm() {
 }
 
 async function submitForm() {
-  console.log(form.value.parent_company)
+  console.log(form_id.value, form.value)
   if (form.value.company != null && form.value.company.trim() !== "") {
     const exists = items_company().some(item => item.label === form.value.company)
     if (!exists) {
@@ -202,6 +203,8 @@ function hideDropdown() {
 
 // === Редактирование ===
 function editItem(id) {
+
+  console.log(id)
   const user = items_companies_ar.value.find(item => item.user.id === id)
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
@@ -215,7 +218,7 @@ function editItem(id) {
     surname: user.user.surname,
 
     decommissioned: user.user.decommissioned,
-    company: user.company.name,
+    company: user.company?.name,
     post:  user.postType.name,
   }
   form_id.value = id
