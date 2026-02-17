@@ -23,9 +23,9 @@ const routes = [
     { path: '/platform', name: 'platform', component: Platform },
     { path: '/message', name: 'message', component: Message },
 
-    // { path: '/pop_ap_trivoga_ai', name: 'pop_ap_trivoga_ai', component: PopApTrivogaAi },
-    // { path: '/pop_ap_trivoga_ai_2', name: 'pop_ap_trivoga_ai_2', component: PopApTrivogaAi2 },
-    // { path: '/pop_ap_trivoga', name: 'pop_ap_trivoga', component: PopApTrivoga },
+    { path: '/pop_ap_trivoga_ai', name: 'pop_ap_trivoga_ai', component: PopApTrivogaAi },
+    { path: '/pop_ap_trivoga_ai_2', name: 'pop_ap_trivoga_ai_2', component: PopApTrivogaAi2 },
+    { path: '/pop_ap_trivoga', name: 'pop_ap_trivoga', component: PopApTrivoga },
     // { path: '/navbar', name: 'Navbar', component: Navbar },
 
     {

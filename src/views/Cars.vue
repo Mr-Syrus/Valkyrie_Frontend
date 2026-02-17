@@ -387,9 +387,9 @@ function toggleCollapse() {
 }
 
 onMounted(async () => {
-  await loadingModelCars()
-  await loadingPlatforms()
-  await sendRequest()
+  loadingModelCars()
+  loadingPlatforms()
+  sendRequest()
   
   const modalEl = document.getElementById('addCompanyModal')
   if (modalEl) {
