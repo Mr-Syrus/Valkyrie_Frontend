@@ -21,6 +21,7 @@ export default defineConfig({
                 target: 'https://localhost:7232',
                 changeOrigin: true,
                 secure: false,
+                ws: true, // Включаем поддержку WebSocket
             },
             '/swagger': {
                 target: 'https://localhost:7232',
