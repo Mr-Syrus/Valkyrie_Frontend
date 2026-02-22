@@ -1,5 +1,6 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
+import * as bootstrap from 'bootstrap'
 import {message_search} from "@/api/Messages.js";
 
 // === Данные для сообщений ===
@@ -230,6 +231,26 @@ const items_platform_id_to_address = computed(() => {
   return map;
 })
 
+// === Просмотр события ===
+const selectedMsg = ref(null)
+
+function displayVal(v) {
+  return v !== null && v !== undefined ? v : '—'
+}
+
+function openEventModal(msg) {
+  selectedMsg.value = msg
+  const modalEl = document.getElementById('eventViewModal')
+  bootstrap.Modal.getOrCreateInstance(modalEl).show()
+}
+
+function closeEventModal() {
+  const modalEl = document.getElementById('eventViewModal')
+  bootstrap.Modal.getOrCreateInstance(modalEl).hide()
+  const backdrop = document.querySelector('.modal-backdrop')
+  if (backdrop) backdrop.remove()
+}
+
 // === Панель фильтров ===
 const isCollapsed = ref(false)
 const searchQuery = ref('')
@@ -252,6 +273,19 @@ function toggleCollapse() {
 
 onMounted(async () => {
   await sendRequest()
+  const modalEl = document.getElementById('eventViewModal')
+  if (modalEl) {
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      selectedMsg.value = null
+    })
+  }
+})
+
+onUnmounted(() => {
+  const modalEl = document.getElementById('eventViewModal')
+  if (modalEl) {
+    bootstrap.Modal.getOrCreateInstance(modalEl).dispose()
+  }
 })
 </script>
 
@@ -380,14 +414,23 @@ onMounted(async () => {
               <div class="row">
                 <div class="col-4 mb-3" v-for="msg in messages" :key="msg.event.id">
                   <div class="position-relative p-3"
-                       :style="{ backgroundColor: msg.history ? '#D4EDDA' : '#F8D7DA', height: '200px', borderRadius: '4px' }">
+                       :style="{
+                         backgroundColor: msg.event.typeEvent?.name !== 'SOS' ? '#FFFFFF' : (msg.history ? '#D4EDDA' : '#F8D7DA'),
+                         height: '200px', borderRadius: '4px', cursor: 'pointer'
+                       }"
+                       @click="openEventModal(msg)">
                     <div class="text-start"><strong>Тип:</strong> {{ msg.event.typeEvent?.name || 'Не указан' }}</div>
                     <div class="text-start"><strong>Машина:</strong> {{ msg.event.car?.number || 'Не указана' }}</div>
                     <div class="text-start"><strong>Дата:</strong> {{ new Date(msg.event.dateTime).toLocaleString('ru-RU') }}</div>
                     <div class="text-start"><strong>Координаты:</strong> {{ msg.event.latitude }}, {{ msg.event.longitude }}</div>
                     <div class="text-start mt-2">
-                      <span v-if="msg.history" class="badge bg-success">Отвечено</span>
-                      <span v-else class="badge bg-danger">Нет ответа</span>
+                      <template v-if="msg.event.typeEvent?.name !== 'SOS'">
+                        <span class="badge bg-secondary">Не требует реакции</span>
+                      </template>
+                      <template v-else>
+                        <span v-if="msg.history" class="badge bg-success">Отвечено</span>
+                        <span v-else class="badge bg-danger">Нет ответа</span>
+                      </template>
                     </div>
                   </div>
                 </div>
@@ -398,6 +441,87 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
+  <!-- Модальное окно просмотра события -->
+  <div class="modal fade" id="eventViewModal" tabindex="-1" aria-hidden="true"
+       data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Событие #{{ selectedMsg?.event.id }}</h5>
+          <button type="button" class="btn-close" @click="closeEventModal"></button>
+        </div>
+
+        <div class="modal-body" v-if="selectedMsg">
+
+          <!-- Основная информация -->
+          <h6 class="fw-bold mb-2">Основная информация</h6>
+          <div class="row mb-3">
+            <div class="col-6">
+              <div class="mb-2"><strong>Тип события:</strong> {{ selectedMsg.event.typeEvent?.name || 'Не указан' }}</div>
+              <div class="mb-2"><strong>Гос. номер:</strong> {{ selectedMsg.event.car?.number || 'Не указана' }}</div>
+              <div class="mb-2"><strong>Модель:</strong> {{ selectedMsg.event.car?.modelCar?.name || '—' }}</div>
+              <div class="mb-2"><strong>Дата и время:</strong> {{ new Date(selectedMsg.event.dateTime).toLocaleString('ru-RU') }}</div>
+            </div>
+            <div class="col-6">
+              <div class="mb-2"><strong>Широта:</strong> {{ displayVal(selectedMsg.event.latitude) }}</div>
+              <div class="mb-2"><strong>Долгота:</strong> {{ displayVal(selectedMsg.event.longitude) }}</div>
+              <div class="mb-2">
+                <strong>Статус:</strong>
+                <template v-if="selectedMsg.event.typeEvent?.name !== 'SOS'">
+                  <span class="badge bg-secondary ms-1">Не требует реакции</span>
+                </template>
+                <template v-else>
+                  <span v-if="selectedMsg.history" class="badge bg-success ms-1">Отвечено</span>
+                  <span v-else class="badge bg-danger ms-1">Нет ответа</span>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- Площадка -->
+          <h6 class="fw-bold mb-2">Площадка</h6>
+          <div class="row mb-3">
+            <div class="col-6">
+              <div class="mb-2"><strong>Название:</strong> {{ selectedMsg.event.platforms?.name || '—' }}</div>
+            </div>
+            <div class="col-6">
+              <div class="mb-2"><strong>Адрес:</strong> {{ selectedMsg.event.platforms?.address || '—' }}</div>
+            </div>
+          </div>
+
+          <!-- Телеметрия -->
+          <h6 class="fw-bold mb-2">Телеметрия</h6>
+          <div class="row">
+            <div class="col-6">
+              <div class="mb-2"><strong>Крутящий момент:</strong> {{ displayVal(selectedMsg.event.engineTorque) }}</div>
+              <div class="mb-2"><strong>Нагрузка двигателя (%):</strong> {{ displayVal(selectedMsg.event.engineLoad) }}</div>
+              <div class="mb-2"><strong>Давление масла:</strong> {{ displayVal(selectedMsg.event.engineOilPressure) }}</div>
+              <div class="mb-2"><strong>Температура масла:</strong> {{ displayVal(selectedMsg.event.engineILTemperature) }}</div>
+              <div class="mb-2"><strong>Температура выхлопных газов (EGT):</strong> {{ displayVal(selectedMsg.event.exhaustGasTemperature) }}</div>
+              <div class="mb-2"><strong>Моточасы:</strong> {{ displayVal(selectedMsg.event.engineOperatingHours) }}</div>
+              <div class="mb-2"><strong>Температура трансмиссии:</strong> {{ displayVal(selectedMsg.event.transmissionTemperature) }}</div>
+            </div>
+            <div class="col-6">
+              <div class="mb-2"><strong>Расход топлива (реальн.):</strong> {{ displayVal(selectedMsg.event.remainingFuelRealTime) }}</div>
+              <div class="mb-2"><strong>Остаток топлива (%):</strong> {{ displayVal(selectedMsg.event.remainingFuel) }}</div>
+              <div class="mb-2"><strong>Давление в гидросистеме:</strong> {{ displayVal(selectedMsg.event.pressureHydraulicSystem) }}</div>
+              <div class="mb-2"><strong>Температура гидр. жидкости:</strong> {{ displayVal(selectedMsg.event.hydraulicFluidTemperature) }}</div>
+              <div class="mb-2"><strong>Напряжение АКБ:</strong> {{ displayVal(selectedMsg.event.batteryVoltage) }}</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="closeEventModal">Закрыть</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>
