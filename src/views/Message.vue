@@ -146,11 +146,6 @@ const sections = ref([
   },
 ])
 
-const items_type_event = () => sections.value[0].items
-const items_car = () => sections.value[1].items
-const items_platform = () => sections.value[2].items
-const items_status = () => sections.value[3].items
-
 let isProcessing = false
 let pending = false
 
@@ -219,6 +214,17 @@ const items_platform_id_to_name = computed(() => {
   items_messages_ar.value.forEach(item => {
     if (item.event && item.event.platforms) {
       map[item.event.platformId] = item.event.platforms.name;
+    }
+  });
+  return map;
+})
+
+// Computed для маппинга ID платформы на адрес
+const items_platform_id_to_address = computed(() => {
+  const map = {};
+  items_messages_ar.value.forEach(item => {
+    if (item.event && item.event.platforms) {
+      map[item.event.platformId] = item.event.platforms.address;
     }
   });
   return map;
@@ -365,7 +371,8 @@ onMounted(async () => {
                 <img src="@/assets/triangle.svg" alt="triangle"
                      style="width: 20px; height: 20px; margin-right: 8px;"/>
                 <div v-if="platformId">
-                  <span class="fw-bold">{{ items_platform_id_to_name[platformId] || `Платформа ID: ${platformId}` }}</span>
+                  <span class="fw-bold">Площадка {{ items_platform_id_to_name[platformId] || `ID: ${platformId}` }}</span>
+                  <div class="text-muted small">Адрес площадки: {{ items_platform_id_to_address[platformId] || 'Не указан' }}</div>
                 </div>
               </div>
 
@@ -394,11 +401,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.bg-color-forms {
-  background-color: #f8f9fa;
-  min-height: 100vh;
-}
-
 .collapse-icon {
   width: 16px;
   height: 16px;
