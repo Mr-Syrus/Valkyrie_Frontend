@@ -7,6 +7,7 @@ import Loading from "@/components/Loading.vue";
 import Navbar from "@/components/Navbar.vue";
 import Login from "@/views/Login.vue";
 import PopApTrivohaAi2 from "@/components/pop_ap_trivoga_ai_2.vue";
+import AppNotifications from "@/components/AppNotifications.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -70,6 +71,7 @@ onUnmounted(() => {
   </div>
   <div v-else-if="route.name === 'login'">
     <Login />
+    <AppNotifications />
   </div>
   <div v-else>
     <Navbar />
@@ -83,6 +85,9 @@ onUnmounted(() => {
       @close="handleAlertClose"
       @reply="handleAlertReply"
     />
+
+    <!-- Уведомления об ошибках сети -->
+    <AppNotifications />
   </div>
 </template>
 
