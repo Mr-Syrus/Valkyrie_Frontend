@@ -270,7 +270,7 @@ onUnmounted(() => {
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Материнская компания</label>
+              <label class="form-label">Компания владелец</label>
               <input
                   v-model="form.parent_company"
                   type="text"
