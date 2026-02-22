@@ -224,6 +224,29 @@ function editItem(id) {
   form_id.value = id
 }
 
+// === Развёрнутые компании ===
+const expandedCompanies = ref([])
+
+function toggleCompanyExpand(companyId) {
+  const idx = expandedCompanies.value.indexOf(companyId)
+  if (idx === -1) {
+    expandedCompanies.value.push(companyId)
+  } else {
+    expandedCompanies.value.splice(idx, 1)
+  }
+}
+
+function isCompanyExpanded(companyId) {
+  return expandedCompanies.value.includes(companyId)
+}
+
+function getVisibleUsers(users, companyId) {
+  if (isCompanyExpanded(companyId) || users.length <= 4) {
+    return users
+  }
+  return users.slice(0, 3)
+}
+
 // === Панель фильтров ===
 const isCollapsed = ref(false)
 const searchQuery = ref('')
@@ -347,15 +370,18 @@ onUnmounted(() => {
               <!-- Верхняя часть блока: треугольник + имя компании -->
               <div class="d-flex align-items-center mb-3">
                 <img src="@/assets/triangle.svg" alt="triangle"
-                     style="width: 20px; height: 20px; margin-right: 8px;"/>
+                     class="section-icon"
+                     :class="{ sectionRotated: isCompanyExpanded(companyId) }"
+                     style="width: 20px; height: 20px; margin-right: 8px; cursor: pointer;"
+                     @click="toggleCompanyExpand(companyId)"/>
                 <div v-if="companyId">
-                  <span class="fw-bold">{{items_company_id_in_name[companyId]}}</span> <!-- имя компании для теста -->
+                  <span class="fw-bold">{{items_company_id_in_name[companyId]}}</span>
                 </div>
               </div>
 
               <!-- Пользователи внутри компании -->
               <div class="row">
-                <div class="col-3 mb-3" v-for="user in users" :key="user.user.id">
+                <div class="col-3 mb-3" v-for="user in getVisibleUsers(users, companyId)" :key="user.user.id">
                   <div class="position-relative p-3"
                        style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
                     <div class="text-start">Ф: {{ user.user.lastname }}</div>
@@ -368,6 +394,15 @@ onUnmounted(() => {
                         style="bottom: 5px; right: 5px; width: 20px; height: 20px;"
                         @click="editItem(user.user.id)"
                     >
+                  </div>
+                </div>
+
+                <!-- Блок "Ещё N" -->
+                <div v-if="!isCompanyExpanded(companyId) && users.length > 4" class="col-3 mb-3">
+                  <div class="d-flex align-items-center justify-content-center p-3"
+                       style="background-color: #D9D9D9; height: 130px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; font-weight: 600;"
+                       @click="toggleCompanyExpand(companyId)">
+                    Ещё {{ users.length - 3 }}
                   </div>
                 </div>
               </div>
@@ -384,7 +419,12 @@ onUnmounted(() => {
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Добавить сотрудника</h5>
+          <template v-if="form_id==null">
+            <h5 class="modal-title">Добавить сотрудника</h5>
+          </template>
+          <template v-else>
+            <h5 class="modal-title">Редактирование сотрудника</h5>
+          </template>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 

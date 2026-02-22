@@ -319,7 +319,12 @@ onUnmounted(() => {
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Добавить объект</h5>
+          <template v-if="form_id == null">
+            <h5 class="modal-title">Добавление площадки</h5>
+          </template>
+          <template v-else>
+            <h5 class="modal-title">Редактирование площадки</h5>
+          </template>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
