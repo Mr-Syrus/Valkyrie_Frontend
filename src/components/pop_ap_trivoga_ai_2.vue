@@ -149,6 +149,7 @@
 </style>
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue';
+import { api } from '@/api/main_axios.js';
 
 const props = defineProps({
   eventData: {
@@ -249,9 +250,15 @@ const close = () => {
   emit('close');
 };
 
-const handleReply = () => {
-  emit('reply', props.eventData);
-  close();
+const handleReply = async () => {
+  try {
+    await api.post('/events/ok', { id: props.history.Id });
+    console.log('PopApTrivohaAi2: відповідь відправлено, id =', props.eventData.Id);
+    emit('reply', props.eventData);
+    close();
+  } catch (error) {
+    console.error('PopApTrivohaAi2: помилка відправки відповіді', error);
+  }
 };
 
 // Показываем модальное окно когда получаем данные

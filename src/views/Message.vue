@@ -307,6 +307,8 @@ onMounted(async () => {
                       class="form-control mb-1"
                       :min="item.min"
                       :max="item.max"
+
+                      @change="timeSendRequest()"
                   >
                   <input
                       type="number"
@@ -315,6 +317,8 @@ onMounted(async () => {
                       class="form-control"
                       :min="item.min"
                       :max="item.max"
+
+                      @change="timeSendRequest()"
                   >
                 </template>
 
@@ -327,6 +331,8 @@ onMounted(async () => {
                       placeholder="Введите значение"
                       v-model="item.q"
                       class="form-control"
+
+                      @change="timeSendRequest()"
                   >
                 </template>
               </div>
@@ -374,7 +380,7 @@ onMounted(async () => {
                     <div class="text-start"><strong>Координаты:</strong> {{ msg.event.latitude }}, {{ msg.event.longitude }}</div>
                     <div class="text-start mt-2">
                       <span v-if="msg.history" class="badge bg-success">Отвечено</span>
-                      <span v-else class="badge bg-danger">Не отвечено</span>
+                      <span v-else class="badge bg-danger">Нет ответа</span>
                     </div>
                   </div>
                 </div>
