@@ -1,24 +1,22 @@
 <template>
-  <div class="alert-container">
-    <div class="event-badge-top">
-      <img src="@/assets/fire-icon.svg" alt="Событие" class="event-icon-large" />
-      <span class="event-text-large">{{ eventType }}</span>
-    </div>
+  <div class="alert-overlay">
+    <div class="alert-container">
+      <div class="event-badge-top">
+        <img src="@/assets/fire-icon.svg" alt="Событие" class="event-icon-large" />
+        <span class="event-text-large">{{ eventType }}</span>
+      </div>
 
-    <div class="alert-header">
-      <span class="car-number">Машина с номером {{ eventData?.Car?.Number || '???' }}</span>
-      <!--<span class="location-label">местоположение</span>-->
-      <span class="object-code">объект {{ eventData?.Platforms?.Name || '???' }}</span>
-    </div>
+      <div class="alert-header">
+        <span class="car-number">Машина с номером {{ eventData?.Car?.Number || '???' }}</span>
+        <span class="object-code">объект {{ eventData?.Platforms?.Name || '???' }}</span>
+      </div>
 
-<!--    <div class="location-section">-->
-<!--    </div>-->
-
-    <div class="alert-footer">
-      <button class="reply-btn">Ответить</button>
-      <div class="redirect-timer">
-        <span v-if="countdown > 0">Будет передана другому через {{ Math.floor(countdown / 60) }}:{{ String(countdown % 60).padStart(2, '0') }}</span>
-        <span v-else style="color: #ff9800; font-weight: bold;">Передана другому оператору</span>
+      <div class="alert-footer">
+        <button class="reply-btn" @click="handleReply">Ответить</button>
+        <div class="redirect-timer">
+          <span v-if="countdown > 0">Будет передана другому через {{ Math.floor(countdown / 60) }}:{{ String(countdown % 60).padStart(2, '0') }}</span>
+          <span v-else style="color: #ff9800; font-weight: bold;">Передана другому оператору</span>
+        </div>
       </div>
     </div>
   </div>
@@ -107,36 +105,12 @@
   margin-bottom: 8px;
 }
 
-.location-label {
-  display: block;
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 4px;
-  color: #666;
-}
 
 .object-code {
   display: block;
   font-weight: bold;
   font-size: 14px;
   margin-bottom: 12px;
-}
-
-.event-details {
-  width: 100%;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 12px;
-  margin-bottom: 16px;
-}
-
-.detail-item {
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.detail-item:last-child {
-  margin-bottom: 0;
 }
 
 .detail-item strong {
@@ -174,7 +148,7 @@
 }
 </style>
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onUnmounted, watch } from 'vue';
 
 const props = defineProps({
   eventData: {
@@ -284,6 +258,7 @@ const handleReply = () => {
 watch(() => props.eventData, (newValue) => {
   if (newValue) {
     isVisible.value = true;
+    console.log('PopApTrivohaAi2: попап відображено', newValue);
     startCountdown();
   }
 }, { immediate: true });
