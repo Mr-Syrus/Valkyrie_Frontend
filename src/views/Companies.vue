@@ -8,10 +8,23 @@ const items_companies = ref([])
 
 // === Фильтры ===
 const sections = ref([
-  {title: 'Материнская компания', open: false, items: []}
+  {title: 'Материнская компания', open: false, items: []},
+  {
+    title: 'Состояние эксплуатации',
+    open: false,
+    items: [
+      {
+        label: 'Выведено из эксплуатации',
+        checked: false,
+        type: 'null',
+        q: '',
+      }
+    ]
+  }
 ])
 
 const items = () => sections.value[0].items
+const sections_is_decommissioned = () => sections.value[1].items[0].checked
 
 let isProcessing = false
 let pending = false
@@ -53,12 +66,12 @@ async function loadingCompanies() {
 }
 
 // === Форма добавления компании ===
-const form = ref({name: '', parent_company: ''})
+const form = ref({name: '', parent_company: '', isDecommissioned: false})
 const error_form = ref("")
 const form_id = ref(null)
 
 function resetForm() {
-  form.value = {name: '', parent_company: ''}
+  form.value = {name: '', parent_company: '', isDecommissioned: false}
   error_form.value = ""
   form_id.value = null
 }
@@ -72,9 +85,9 @@ async function submitForm() {
     }
   }
   if (form_id.value == null) {
-    await crete_company(form.value.name, form.value.parent_company)
+    await crete_company(form.value.name, form.value.parent_company, form.value.isDecommissioned)
   } else {
-    await put_company(form_id.value, form.value.name, form.value.parent_company)
+    await put_company(form_id.value, form.value.name, form.value.parent_company, form.value.isDecommissioned)
   }
   await loadingCompanies()
 
@@ -117,7 +130,11 @@ function editItem(id) {
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
   modalInstance.show()
 
-  form.value = {name: company.companyName, parent_company: company.parentsCompanyName}
+  form.value = {
+    name: company.companyName,
+    parent_company: company.parentsCompanyName,
+    isDecommissioned: company.isDecommissioned ?? false,
+  }
   form_id.value = id
 
 }
@@ -238,11 +255,25 @@ onUnmounted(() => {
         <div class="container">
           <div class="row">
             <div class="col-3 mb-3" v-for="item in items_companies" :key="item.companyId">
-              <div class="position-relative p-3" style="background-color: #D9D9D9; height: 130px;">
+              <div
+                  class="position-relative p-3"
+                  :style="{
+                    backgroundColor: item.isDecommissioned ? '#b0b0b0' : '#D9D9D9',
+                    height: '130px',
+                    opacity: item.isDecommissioned ? 0.75 : 1
+                  }"
+              >
                 <div class="text-start">Имя: {{ item.companyName }}</div>
                 <div class="text-start" v-if="item.parentsCompanyName">
                   Ответвилась от: {{ item.parentsCompanyName }}
                 </div>
+                <span
+                    v-if="item.isDecommissioned"
+                    class="badge bg-secondary position-absolute"
+                    style="top: 5px; right: 5px; font-size: 0.7rem;"
+                >
+                  Выведена из эксплуатации
+                </span>
                 <img
                     src="@/assets/edit.svg"
                     class="position-absolute"
@@ -277,6 +308,18 @@ onUnmounted(() => {
             <div class="mb-3">
               <label class="form-label">Название компании<span class="text-danger">*</span></label>
               <input v-model="form.name" type="text" class="form-control" required/>
+            </div>
+
+            <div class="mb-3" v-if="form_id != null">
+              <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="isDecommissioned"
+                    v-model="form.isDecommissioned"
+                />
+                <label class="form-check-label" for="isDecommissioned">Выведена из эксплуатации</label>
+              </div>
             </div>
 
             <div class="mb-3">
