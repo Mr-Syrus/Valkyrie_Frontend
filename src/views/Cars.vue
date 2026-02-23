@@ -199,13 +199,11 @@ function buildFilterJson(sections) {
       }
 
       if (item.type === 'range') {
-        // Берем текущий диапазон из q
         result[key] = {
           Min: item.q.min,
           Max: item.q.max
         };
-      } else if (item.type === 'null') {
-        // Для null/checkbox ставим true
+      } else if (item.type === 'null' && key !== 'null') {
         result[key] = true;
       }
     });
@@ -218,14 +216,26 @@ async function sendRequest() {
   const data = await cars_search(buildFilterJson(sections.value));
   if (!data || !Array.isArray(data)) return
 
-  items_cars_ar.value = data.map(item => item.car || item.Car || item)
-  items_cars.value = data.reduce((acc, item) => {
-    const car = item.car || item.Car || item
+  const now = new Date()
+  const decommissionedFilter = sections_is_decommissioned()
+
+  const isDecommissioned = car =>
+      car.endDateOperation && new Date(car.endDateOperation) < now
+
+  let cars = data.map(item => item.car || item.Car || item)
+
+  if (decommissionedFilter) {
+    cars = cars.filter(car => isDecommissioned(car))
+  } else {
+    cars = cars.filter(car => !isDecommissioned(car))
+  }
+
+  items_cars_ar.value = cars
+  items_cars.value = cars.reduce((acc, car) => {
     const platformId = car.platformId;
     if (!acc[platformId]) {
       acc[platformId] = [];
     }
-
     acc[platformId].push(car);
     return acc;
   }, {});
