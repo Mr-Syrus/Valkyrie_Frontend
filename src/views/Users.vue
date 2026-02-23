@@ -218,8 +218,12 @@ function selectItemPost(item) {
   showDropdownPost.value = false
 }
 
-function hideDropdown() {
-  setTimeout(() => showDropdownCompany.value = false, 100)
+function hideDropdownCompany() {
+  setTimeout(() => { showDropdownCompany.value = false }, 150)
+}
+
+function hideDropdownPost() {
+  setTimeout(() => { showDropdownPost.value = false }, 150)
 }
 
 // === Редактирование ===
@@ -502,8 +506,8 @@ onUnmounted(() => {
                   type="text"
                   class="form-control"
                   @input="filterItems"
-                  @focus="showDropdownCompany = true"
-                  @blur="hideDropdown"
+                  @focus="showDropdownCompany = true; filterItems()"
+                  @blur="hideDropdownCompany"
                   maxlength="75"
               />
               <ul v-if="showDropdownCompany && filteredItemsCompany.length" class="list-group position-absolute w-100"
@@ -526,8 +530,8 @@ onUnmounted(() => {
                   type="text"
                   class="form-control"
                   @input="filterItems"
-                  @focus="showDropdownPost = true"
-                  @blur="hideDropdown"
+                  @focus="showDropdownPost = true; filterItems()"
+                  @blur="hideDropdownPost"
                   maxlength="50"
               />
               <ul v-if="showDropdownPost && filteredItemsPost.length" class="list-group position-absolute w-100"

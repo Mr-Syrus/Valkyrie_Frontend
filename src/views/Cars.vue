@@ -357,11 +357,12 @@ function selectItemPlatform(item) {
   showDropdownPlatform.value = false
 }
 
-function hideDropdown() {
-  setTimeout(() => {
-    showDropdownModelCar.value = false
-    showDropdownPlatform.value = false
-  }, 100)
+function hideDropdownModelCar() {
+  setTimeout(() => { showDropdownModelCar.value = false }, 150)
+}
+
+function hideDropdownPlatform() {
+  setTimeout(() => { showDropdownPlatform.value = false }, 150)
 }
 
 // === Редактирование ===
@@ -619,8 +620,8 @@ onUnmounted(() => {
                   type="text"
                   class="form-control"
                   @input="form.modelCarId = null; filterItems()"
-                  @focus="showDropdownModelCar = true"
-                  @blur="hideDropdown"
+                  @focus="showDropdownModelCar = true; filterItems()"
+                  @blur="hideDropdownModelCar"
                   placeholder="Начните вводить название модели..."
               />
               <ul v-if="showDropdownModelCar && filteredItemsModelCar.length" class="list-group position-absolute w-100"
@@ -643,8 +644,8 @@ onUnmounted(() => {
                   type="text"
                   class="form-control"
                   @input="form.platformId = null; filterItems()"
-                  @focus="showDropdownPlatform = true"
-                  @blur="hideDropdown"
+                  @focus="showDropdownPlatform = true; filterItems()"
+                  @blur="hideDropdownPlatform"
                   placeholder="Начните вводить название платформы..."
               />
               <ul v-if="showDropdownPlatform && filteredItemsPlatform.length" class="list-group position-absolute w-100"
