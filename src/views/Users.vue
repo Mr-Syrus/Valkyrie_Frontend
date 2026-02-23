@@ -11,7 +11,19 @@ const items_companies_ar = ref([])
 // === Фильтры ===
 const sections = ref([
   {title: 'Компания', open: false, items: []},
-  {title: 'Пост', open: false, items: []}
+  {title: 'Пост', open: false, items: []},
+  {
+    title: 'Статус сотрудника',
+    open: false,
+    items: [
+      {
+        label: 'Уволен',
+        checked: false,
+        type: 'null',
+        q: '',
+      }
+    ]
+  }
 ])
 
 let posts = ref({})
@@ -21,6 +33,7 @@ const items_company_id_in_name = computed(() =>
     Object.fromEntries(items_company().map(i => [i.id, i.label]))
 );
 const items_post = () => sections.value[1].items
+const sections_is_decommissioned = () => sections.value[2].items[0].checked
 
 let isProcessing = false
 let pending = false
@@ -43,8 +56,13 @@ async function sendRequest() {
   const activeIds_post = items_post().filter(i => i.checked).map(i => i.id)
   const data = await user_search(activeIds_company, activeIds_post);
   if (!data || !Array.isArray(data)) return
-  items_companies_ar.value = data
-  items_companies.value = data.reduce((acc, item) => {
+
+  const filtered = sections_is_decommissioned()
+      ? data.filter(item => item.user?.decommissioned)
+      : data.filter(item => !item.user?.decommissioned)
+
+  items_companies_ar.value = filtered
+  items_companies.value = filtered.reduce((acc, item) => {
     const companyId = item.company?.id ?? "";
     if (!acc[companyId]) {
       acc[companyId] = [];
@@ -386,12 +404,26 @@ onUnmounted(() => {
               <!-- Пользователи внутри компании -->
               <div class="row">
                 <div class="col-3 mb-3" v-for="user in getVisibleUsers(users, companyId)" :key="user.user?.id">
-                  <div class="position-relative p-3"
-                       style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
+                  <div
+                      class="position-relative p-3"
+                      :style="{
+                        backgroundColor: user.user?.decommissioned ? '#b0b0b0' : '#D9D9D9',
+                        height: '130px',
+                        borderRadius: '4px',
+                        opacity: user.user?.decommissioned ? 0.75 : 1
+                      }"
+                  >
                     <div class="text-start">Ф: {{ user.user.lastname }}</div>
                     <div class="text-start">И: {{ user.user.firstname }}</div>
                     <div class="text-start">О: {{ user.user.surname }}</div>
                     <div class="text-start">пост: {{ user.postType?.name }}</div>
+                    <span
+                        v-if="user.user?.decommissioned"
+                        class="badge bg-secondary position-absolute"
+                        style="top: 5px; right: 5px; font-size: 0.7rem;"
+                    >
+                      Уволен
+                    </span>
                     <img
                         src="@/assets/edit.svg"
                         class="position-absolute"
