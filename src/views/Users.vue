@@ -468,21 +468,21 @@ onUnmounted(() => {
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Никнейм<span class="text-danger">*</span></label>
-              <input v-model="form.username" type="text" class="form-control" required/>
+              <input v-model="form.username" type="text" class="form-control" required maxlength="25"/>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Фамилия<span class="text-danger">*</span></label>
-              <input v-model="form.firstname" type="text" class="form-control" required/>
+              <input v-model="form.firstname" type="text" class="form-control" required maxlength="25"/>
             </div>
             <div class="mb-3">
               <label class="form-label">Имя<span class="text-danger">*</span></label>
-              <input v-model="form.lastname" type="text" class="form-control" required/>
+              <input v-model="form.lastname" type="text" class="form-control" required maxlength="25"/>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Отчество</label>
-              <input v-model="form.surname" type="text" class="form-control"/>
+              <input v-model="form.surname" type="text" class="form-control" maxlength="25"/>
             </div>
 
             <div class="mb-3">
@@ -504,6 +504,7 @@ onUnmounted(() => {
                   @input="filterItems"
                   @focus="showDropdownCompany = true"
                   @blur="hideDropdown"
+                  maxlength="75"
               />
               <ul v-if="showDropdownCompany && filteredItemsCompany.length" class="list-group position-absolute w-100"
                   style="z-index: 1000;">
@@ -527,6 +528,7 @@ onUnmounted(() => {
                   @input="filterItems"
                   @focus="showDropdownPost = true"
                   @blur="hideDropdown"
+                  maxlength="50"
               />
               <ul v-if="showDropdownPost && filteredItemsPost.length" class="list-group position-absolute w-100"
                   style="z-index: 1000;">

@@ -24,7 +24,7 @@ async function onSubmit(e) {
       <img src="@/assets/big_logo.svg" alt="Logo" class="mb-4" style="width: 80px; height: auto;">
       <form class="w-100" @submit="onSubmit">
         <div class="mb-3">
-          <input type="text" class="form-control" placeholder="Логин" v-model="username">
+          <input type="text" class="form-control" placeholder="Логин" v-model="username" maxlength="25">
         </div>
         <div class="mb-3">
           <input type="password" class="form-control" placeholder="Пароль" v-model="password">

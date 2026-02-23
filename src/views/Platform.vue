@@ -370,12 +370,12 @@ onUnmounted(() => {
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Название<span class="text-danger">*</span></label>
-              <input v-model="form.name" type="text" class="form-control" required/>
+              <input v-model="form.name" type="text" class="form-control" required maxlength="75"/>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Адрес<span class="text-danger">*</span></label>
-              <input v-model="form.address" type="text" class="form-control" required/>
+              <input v-model="form.address" type="text" class="form-control" required maxlength="75"/>
             </div>
 
             <div class="mb-3">
@@ -397,6 +397,7 @@ onUnmounted(() => {
                   @input="filterItems"
                   @focus="showDropdownCompany = true"
                   @blur="hideDropdown"
+                  maxlength="75"
               />
               <ul v-if="showDropdownCompany && filteredItemsCompany.length" class="list-group position-absolute w-100"
                   style="z-index: 1000;">
