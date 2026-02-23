@@ -10,11 +10,11 @@ const items_companies = ref([])
 const sections = ref([
   {title: 'Материнская компания', open: false, items: []},
   {
-    title: 'Состояние эксплуатации',
+    title: 'Статус компании',
     open: false,
     items: [
       {
-        label: 'Выведено из эксплуатации',
+        label: 'Ликвидирована',
         checked: false,
         type: 'null',
         q: '',
@@ -24,7 +24,7 @@ const sections = ref([
 ])
 
 const items = () => sections.value[0].items
-const sections_is_decommissioned = () => sections.value[1].items[0].checked
+const sections_is_isDecommissioned = () => sections.value[1].items[0].checked
 
 let isProcessing = false
 let pending = false
@@ -46,7 +46,9 @@ async function sendRequest() {
   const activeIds = items().filter(i => i.checked).map(i => i.id)
   const data = await companies_search_by_parents(activeIds)
   if (data && Array.isArray(data)) {
-    items_companies.value = data
+    items_companies.value = sections_is_isDecommissioned()
+        ? data.filter(i => i.isDecommissioned)
+        : data.filter(i => !i.isDecommissioned)
   }
 }
 
@@ -272,7 +274,7 @@ onUnmounted(() => {
                     class="badge bg-secondary position-absolute"
                     style="top: 5px; right: 5px; font-size: 0.7rem;"
                 >
-                  Выведена из эксплуатации
+                  Ликвидирована
                 </span>
                 <img
                     src="@/assets/edit.svg"
@@ -318,7 +320,7 @@ onUnmounted(() => {
                     id="isDecommissioned"
                     v-model="form.isDecommissioned"
                 />
-                <label class="form-check-label" for="isDecommissioned">Выведена из эксплуатации</label>
+                <label class="form-check-label" for="isDecommissioned">Ликвидирована</label>
               </div>
             </div>
 
