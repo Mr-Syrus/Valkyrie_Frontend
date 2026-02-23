@@ -11,10 +11,23 @@ const items_companies_ar = ref([])
 
 // === Фильтры ===
 const sections = ref([
-  {title: 'Компания', open: false, items: []}
+  {title: 'Компания', open: false, items: []},
+  {
+    title: 'Статус площадки',
+    open: false,
+    items: [
+      {
+        label: 'Закрыта',
+        checked: false,
+        type: 'null',
+        q: '',
+      }
+    ]
+  }
 ])
 
 const items_company = () => sections.value[0].items
+const sections_is_decommissioned = () => sections.value[1].items[0].checked
 const items_company_id_in_name = computed(() =>
     Object.fromEntries(items_company().map(i => [i.id, i.label]))
 );
@@ -45,13 +58,19 @@ async function sendRequest() {
     }
   });
 
-  items_companies_ar.value = data
-  items_companies.value = data.reduce((acc, item) => {
+  const now = new Date()
+  const isClosed = platform => platform.endDate && new Date(platform.endDate) < now
+
+  const filtered = sections_is_decommissioned()
+      ? data.filter(item => isClosed(item))
+      : data.filter(item => !isClosed(item))
+
+  items_companies_ar.value = filtered
+  items_companies.value = filtered.reduce((acc, item) => {
     const companyId = item.сompanyId;
     if (!acc[companyId]) {
       acc[companyId] = [];
     }
-
     acc[companyId].push(item);
     return acc;
   }, {});
@@ -101,12 +120,14 @@ async function submitForm() {
     }
   }
 
+  const endDate = form.value.endDate === "" ? null : form.value.endDate
+
   if (form_id.value == null) {
     await crete_platforms(
         form.value.name,
         form.value.address,
         form.value.startDate,
-        form.value.endDate,
+        endDate,
         form.value.company
     )
   } else {
@@ -115,7 +136,7 @@ async function submitForm() {
         form.value.name,
         form.value.address,
         form.value.startDate,
-        form.value.endDate,
+        endDate,
         form.value.company,
     )
   }
@@ -297,9 +318,23 @@ onUnmounted(() => {
               <!-- Пользователи внутри компании -->
               <div class="row">
                 <div class="col-3 mb-3" v-for="platform in platforms" :key="platform.id">
-                  <div class="position-relative p-3"
-                       style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
+                  <div
+                      class="position-relative p-3"
+                      :style="{
+                        backgroundColor: (platform.endDate && new Date(platform.endDate) < new Date()) ? '#b0b0b0' : '#D9D9D9',
+                        height: '130px',
+                        borderRadius: '4px',
+                        opacity: (platform.endDate && new Date(platform.endDate) < new Date()) ? 0.75 : 1
+                      }"
+                  >
                     <div class="text-start">Название: {{ platform.name }}</div>
+                    <span
+                        v-if="platform.endDate && new Date(platform.endDate) < new Date()"
+                        class="badge bg-secondary position-absolute"
+                        style="top: 5px; right: 5px; font-size: 0.7rem;"
+                    >
+                      Закрыта
+                    </span>
                     <img
                         src="@/assets/edit.svg"
                         class="position-absolute"
