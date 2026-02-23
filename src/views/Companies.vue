@@ -119,7 +119,7 @@ function selectItem(item) {
 }
 
 function hideDropdown() {
-  setTimeout(() => showDropdown.value = false, 100)
+  setTimeout(() => showDropdown.value = false, 150)
 }
 
 // === Редактирование ===
@@ -331,7 +331,7 @@ onUnmounted(() => {
                   type="text"
                   class="form-control"
                   @input="filterItems"
-                  @focus="showDropdown = true"
+                  @focus="showDropdown = true; filterItems()"
                   @blur="hideDropdown"
                   maxlength="75"
               />

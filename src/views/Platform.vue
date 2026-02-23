@@ -170,7 +170,7 @@ function selectItemCompany(item) {
 }
 
 function hideDropdown() {
-  setTimeout(() => showDropdownCompany.value = false, 100)
+  setTimeout(() => showDropdownCompany.value = false, 150)
 }
 
 // === Редактирование ===
@@ -395,7 +395,7 @@ onUnmounted(() => {
                   type="text"
                   class="form-control"
                   @input="filterItems"
-                  @focus="showDropdownCompany = true"
+                  @focus="showDropdownCompany = true; filterItems()"
                   @blur="hideDropdown"
                   maxlength="75"
               />
