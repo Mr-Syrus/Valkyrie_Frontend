@@ -150,6 +150,7 @@
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue';
 import { api } from '@/api/main_axios.js';
+import sirenSrc from '@/assets/fantastic-siren.mp3';
 
 const props = defineProps({
   eventData: {
@@ -167,6 +168,42 @@ const emit = defineEmits(['close', 'reply']);
 const isVisible = ref(false);
 const countdown = ref(600); // 20 минут = 1200 секун, 10 минут = 600 секунд
 let countdownTimer = null;
+
+// === Сирена ===
+let siren = null;
+let pendingSiren = false;
+
+const unlockAndPlay = () => {
+  if (!pendingSiren) return;
+  pendingSiren = false;
+  document.removeEventListener('click', unlockAndPlay);
+  document.removeEventListener('keydown', unlockAndPlay);
+  if (siren) {
+    siren.play().catch(() => {});
+  }
+};
+
+const startSiren = () => {
+  if (siren) return;
+  siren = new Audio(sirenSrc);
+  siren.loop = true;
+  siren.play().catch(() => {
+    // Автовоспроизведение заблокировано — ждём первого взаимодействия
+    pendingSiren = true;
+    document.addEventListener('click', unlockAndPlay);
+    document.addEventListener('keydown', unlockAndPlay);
+  });
+};
+
+const stopSiren = () => {
+  if (!siren) return;
+  siren.pause();
+  siren.currentTime = 0;
+  siren = null;
+  pendingSiren = false;
+  document.removeEventListener('click', unlockAndPlay);
+  document.removeEventListener('keydown', unlockAndPlay);
+};
 
 // Вычисляемые свойства для отображения данных
 const eventType = computed(() => {
@@ -247,6 +284,7 @@ const close = () => {
     clearInterval(countdownTimer);
     countdownTimer = null;
   }
+  stopSiren();
   emit('close');
 };
 
@@ -267,6 +305,7 @@ watch(() => props.eventData, (newValue) => {
     isVisible.value = true;
     console.log('PopApTrivohaAi2: попап відображено', newValue);
     startCountdown();
+    startSiren();
   }
 }, { immediate: true });
 
@@ -274,5 +313,6 @@ onUnmounted(() => {
   if (countdownTimer) {
     clearInterval(countdownTimer);
   }
+  stopSiren();
 });
 </script>
