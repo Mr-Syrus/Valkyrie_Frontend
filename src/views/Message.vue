@@ -194,7 +194,7 @@ async function sendRequest() {
 
   items_messages_ar.value = data.map(item => ({
     event: item.event || item.Event,
-    history: item.history || item.History
+    historys: item.historys || item.Historys || []
   }))
 
   // Группируем по platformId
@@ -417,7 +417,7 @@ onUnmounted(() => {
                 <div class="col-4 mb-3" v-for="msg in messages" :key="msg.event.id">
                   <div class="position-relative p-3"
                        :style="{
-                         backgroundColor: msg.event.typeEvent?.name !== 'SOS' ? '#FFFFFF' : (msg.history ? '#D4EDDA' : '#F8D7DA'),
+                         backgroundColor: msg.event.typeEvent?.name !== 'SOS' ? '#FFFFFF' : (msg.historys?.some(h => h.answer) ? '#D4EDDA' : '#F8D7DA'),
                          height: '200px', borderRadius: '4px', cursor: 'pointer'
                        }"
                        @click="openEventModal(msg)">
@@ -430,7 +430,7 @@ onUnmounted(() => {
                         <span class="badge bg-secondary">Не требует реакции</span>
                       </template>
                       <template v-else>
-                        <span v-if="msg.history" class="badge bg-success">Отвечено</span>
+                        <span v-if="msg.historys?.some(h => h.answer)" class="badge bg-success">Отвечено</span>
                         <span v-else class="badge bg-danger">Нет ответа</span>
                       </template>
                     </div>
@@ -475,7 +475,7 @@ onUnmounted(() => {
                   <span class="badge bg-secondary ms-1">Не требует реакции</span>
                 </template>
                 <template v-else>
-                  <span v-if="selectedMsg.history" class="badge bg-success ms-1">Отвечено</span>
+                  <span v-if="selectedMsg.historys?.some(h => h.answer)" class="badge bg-success ms-1">Отвечено</span>
                   <span v-else class="badge bg-danger ms-1">Нет ответа</span>
                 </template>
               </div>
@@ -513,6 +513,36 @@ onUnmounted(() => {
               <div class="mb-2"><strong>Напряжение АКБ:</strong> {{ displayVal(selectedMsg.event.batteryVoltage) }}</div>
             </div>
           </div>
+
+          <!-- История реакций -->
+          <br>
+          <h6 class="fw-bold mb-2">История реакций</h6>
+          <div v-if="selectedMsg.historys?.length" class="mb-3">
+            <div
+                v-for="h in selectedMsg.historys"
+                :key="h.id"
+                class="d-flex align-items-start gap-2 mb-2 p-2"
+                style="border-radius: 6px; background-color: #f8f9fa; border-left: 4px solid;"
+                :style="{ borderColor: h.answer ? '#198754' : '#dc3545' }"
+            >
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <span class="fw-semibold">
+                    {{ h.user?.lastname }} {{ h.user?.firstname }} {{ h.user?.surname }}
+                  </span>
+                  <span class="text-muted small">
+                    {{ new Date(h.dataTime).toLocaleString('ru-RU') }}
+                  </span>
+                </div>
+                <div class="mt-1">
+                  <span :class="h.answer ? 'badge bg-success' : 'badge bg-danger'">
+                    {{ h.answer ? 'Принято' : 'Отклонено' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-muted mb-3 small">Реакций пока нет</div>
 
         </div>
 
