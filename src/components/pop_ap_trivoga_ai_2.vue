@@ -165,7 +165,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'reply']);
 
 const isVisible = ref(false);
-const countdown = ref(1200); // 20 минут = 1200 секунд
+const countdown = ref(600); // 20 минут = 1200 секун, 10 минут = 600 секунд
 let countdownTimer = null;
 
 // Вычисляемые свойства для отображения данных
