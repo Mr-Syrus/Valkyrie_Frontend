@@ -190,14 +190,16 @@ function buildFilterJson(sections) {
 
 async function sendRequest() {
   const data = await message_search(buildFilterJson(sections.value));
-  
+  if (!data || !Array.isArray(data)) return
+
   items_messages_ar.value = data.map(item => ({
     event: item.event || item.Event,
     history: item.history || item.History
   }))
-  
+
   // Группируем по platformId
   items_messages.value = items_messages_ar.value.reduce((acc, item) => {
+    if (!item.event) return acc
     const platformId = item.event.platformId
     
     if (!acc[platformId]) {

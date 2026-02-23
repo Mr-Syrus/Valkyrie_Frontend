@@ -26,7 +26,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 2500,
-            q: { min: 0, max: 2500 },
+            q: {min: 0, max: 2500},
             teg: 'engine_torque',
           },
           {
@@ -35,7 +35,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 100,
-            q: { min: 0, max: 100 },
+            q: {min: 0, max: 100},
             teg: 'engine_load',
           },
           {
@@ -44,7 +44,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 10,
-            q: { min: 0, max: 10 },
+            q: {min: 0, max: 10},
             teg: 'engine_oil_pressure',
           },
           {
@@ -53,7 +53,7 @@ const sections = ref([
             type: 'range',
             min: -20,
             max: 140,
-            q: { min: -20, max: 140 },
+            q: {min: -20, max: 140},
             teg: 'engine_il_temperature',
           },
           {
@@ -62,7 +62,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 1000,
-            q: { min: 0, max: 1000 },
+            q: {min: 0, max: 1000},
             teg: 'exhaust_gas_temperature',
           },
           {
@@ -71,7 +71,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 100000,
-            q: { min: 0, max: 100000 },
+            q: {min: 0, max: 100000},
             teg: 'engine_operating_hours',
           },
         ]
@@ -86,7 +86,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 100,
-            q: { min: 0, max: 100 },
+            q: {min: 0, max: 100},
             teg: 'remaining_fuel_real_time',
           },
           {
@@ -95,7 +95,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 100,
-            q: { min: 0, max: 100 },
+            q: {min: 0, max: 100},
             teg: 'remaining_fuel',
           },
         ]
@@ -110,7 +110,7 @@ const sections = ref([
             type: 'range',
             min: 0,
             max: 400,
-            q: { min: 0, max: 400 },
+            q: {min: 0, max: 400},
             teg: 'pressure_hydraulic_system',
           },
           {
@@ -119,7 +119,7 @@ const sections = ref([
             type: 'range',
             min: -20,
             max: 120,
-            q: { min: -20, max: 120 },
+            q: {min: -20, max: 120},
             teg: 'hydraulic_fluid_temperature',
           },
         ]
@@ -147,13 +147,28 @@ const sections = ref([
             type: 'range',
             min: 9,
             max: 36,
-            q: { min: 9, max: 36 },
+            q: {min: 9, max: 36},
             teg: 'battery_voltage',
+          },
+        ]
+      },
+      {
+        title: "Состояние эксплуатации",
+        open: false,
+        items: [
+          {
+            label: "Выведено из эксплуатации",
+            checked: false,
+            q: '',
+            type: 'null',
+            teg: 'null',
           },
         ]
       },
     ]
 )
+
+const sections_is_decommissioned = () => sections.value[5].items[0].checked
 
 let isProcessing = false
 let pending = false
@@ -170,6 +185,7 @@ async function timeSendRequest() {
   } while (pending)
   isProcessing = false
 }
+
 function buildFilterJson(sections) {
   const result = {};
 
@@ -197,10 +213,11 @@ function buildFilterJson(sections) {
 
   return result;
 }
+
 async function sendRequest() {
   const data = await cars_search(buildFilterJson(sections.value));
+  if (!data || !Array.isArray(data)) return
 
-  // Бэкенд возвращает { Car: ..., Event: ... }, нужно извлечь car
   items_cars_ar.value = data.map(item => item.car || item.Car || item)
   items_cars.value = data.reduce((acc, item) => {
     const car = item.car || item.Car || item
@@ -217,7 +234,9 @@ async function sendRequest() {
 // === Загрузка моделей машин ===
 async function loadingModelCars() {
   const data = await model_cars()
-  items_model_cars.value = data
+  if (data && Array.isArray(data)) {
+    items_model_cars.value = data
+  }
 }
 
 // === Загрузка платформ ===
@@ -243,6 +262,7 @@ function generator_clean_form() {
     platformSearch: "",
   }
 }
+
 const form = ref(generator_clean_form())
 const error_form = ref("")
 const form_id = ref(null)
@@ -338,12 +358,12 @@ function hideDropdown() {
 function editItem(id) {
   const car = items_cars_ar.value.find(item => item.id === id)
   console.log('Editing car:', car)
-  
+
   if (!car) {
     console.error('Car not found with id:', id)
     return
   }
-  
+
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
   modalInstance.show()
@@ -390,7 +410,7 @@ onMounted(async () => {
   loadingModelCars()
   loadingPlatforms()
   sendRequest()
-  
+
   const modalEl = document.getElementById('addCompanyModal')
   if (modalEl) {
     modalEl.addEventListener('show.bs.modal', resetForm)
@@ -526,7 +546,9 @@ onUnmounted(() => {
                 <img src="@/assets/triangle.svg" alt="triangle"
                      style="width: 20px; height: 20px; margin-right: 8px;"/>
                 <div v-if="platformId">
-                  <span class="fw-bold">{{ items_platform_id_to_name[platformId] || `Платформа ID: ${platformId}` }}</span>
+                  <span class="fw-bold">{{
+                      items_platform_id_to_name[platformId] || `Платформа ID: ${platformId}`
+                    }}</span>
                 </div>
               </div>
 
@@ -630,7 +652,8 @@ onUnmounted(() => {
 
             <div class="mb-3">
               <label class="form-label">Номер машины<span class="text-danger">*</span></label>
-              <input v-model="form.number" type="text" class="form-control" required placeholder="Введите номер машины"/>
+              <input v-model="form.number" type="text" class="form-control" required
+                     placeholder="Введите номер машины"/>
             </div>
           </div>
 
