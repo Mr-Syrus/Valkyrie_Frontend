@@ -663,7 +663,7 @@ onUnmounted(() => {
             <div class="mb-3">
               <label class="form-label">Номер машины<span class="text-danger">*</span></label>
               <input v-model="form.number" type="text" class="form-control" required
-                     placeholder="Введите номер машины"/>
+                     placeholder="Введите номер машины" maxlength="11"/>
             </div>
           </div>
 
