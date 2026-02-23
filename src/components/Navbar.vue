@@ -8,7 +8,8 @@ let username = ref("");
 
 onMounted(async () => {
   const res = await get_user();
-  username.value = res.username
+  if (res)
+    username.value = res.username
 });
 
 async function volumeClick(){

@@ -38,6 +38,7 @@ async function timeSendRequest() {
 async function sendRequest() {
   const activeIds_company = items_company().filter(i => i.checked).map(i => i.id)
   const data = await platforms_search(activeIds_company);
+  if (!data || !Array.isArray(data)) return
   data.forEach(item => {
     if (item.company) {
       item.company = item.company.name;
@@ -59,6 +60,7 @@ async function sendRequest() {
 // === Загрузка компаний ===
 async function loadingCompanies() {
   const data = await all_name_companies()
+  if (!data || !Array.isArray(data)) return
   sections.value[0].items = data.map(i => ({
     label: i.name,
     checked: false,
@@ -153,6 +155,7 @@ function hideDropdown() {
 // === Редактирование ===
 function editItem(id) {
   const platform = items_companies_ar.value.find(item => item.id === id)
+  if (!platform) return
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
   modalInstance.show()

@@ -42,6 +42,7 @@ async function sendRequest() {
   const activeIds_company = items_company().filter(i => i.checked).map(i => i.id)
   const activeIds_post = items_post().filter(i => i.checked).map(i => i.id)
   const data = await user_search(activeIds_company, activeIds_post);
+  if (!data || !Array.isArray(data)) return
   items_companies_ar.value = data
   items_companies.value = data.reduce((acc, item) => {
     const companyId = item.company?.id ?? "";
@@ -56,6 +57,7 @@ async function sendRequest() {
 // === Загрузка компаний ===
 async function loadingCompanies() {
   const data = await all_name_companies()
+  if (!data || !Array.isArray(data)) return
   sections.value[0].items = data.map(i => ({
     label: i.name,
     checked: false,
@@ -70,6 +72,7 @@ async function loadingCompanies() {
 // === Загрузка post ===
 async function loadingPosts() {
   const data = await all_name_post()
+  if (!data || !Array.isArray(data)) return
   sections.value[1].items = data.map(i => ({
     label: i.name,
     checked: false,
@@ -205,7 +208,8 @@ function hideDropdown() {
 function editItem(id) {
 
   console.log(id)
-  const user = items_companies_ar.value.find(item => item.user.id === id)
+  const user = items_companies_ar.value.find(item => item.user?.id === id)
+  if (!user) return
   const modalEl = document.getElementById('addCompanyModal')
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
   modalInstance.show()
@@ -218,8 +222,8 @@ function editItem(id) {
     surname: user.user.surname,
 
     decommissioned: user.user.decommissioned,
-    company: user.company?.name,
-    post:  user.postType.name,
+    company: user.company?.name ?? '',
+    post: user.postType?.name ?? '',
   }
   form_id.value = id
 }
@@ -381,18 +385,18 @@ onUnmounted(() => {
 
               <!-- Пользователи внутри компании -->
               <div class="row">
-                <div class="col-3 mb-3" v-for="user in getVisibleUsers(users, companyId)" :key="user.user.id">
+                <div class="col-3 mb-3" v-for="user in getVisibleUsers(users, companyId)" :key="user.user?.id">
                   <div class="position-relative p-3"
                        style="background-color: #D9D9D9; height: 130px; border-radius: 4px;">
                     <div class="text-start">Ф: {{ user.user.lastname }}</div>
                     <div class="text-start">И: {{ user.user.firstname }}</div>
                     <div class="text-start">О: {{ user.user.surname }}</div>
-                    <div class="text-start">пост: {{ user.postType.name }}</div>
+                    <div class="text-start">пост: {{ user.postType?.name }}</div>
                     <img
                         src="@/assets/edit.svg"
                         class="position-absolute"
                         style="bottom: 5px; right: 5px; width: 20px; height: 20px;"
-                        @click="editItem(user.user.id)"
+                        @click="editItem(user.user?.id)"
                     >
                   </div>
                 </div>
