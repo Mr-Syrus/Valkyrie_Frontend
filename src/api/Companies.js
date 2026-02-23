@@ -12,13 +12,13 @@ export async function all_name_companies() {
     }
 }
 
-export async function crete_company(name, parents) {
+export async function crete_company(name, parents, isDecommissioned = false) {
     if (parents==="")
         parents= null
     try {
         const response = await api.post(
             '/companies',
-            {name, parents}
+            {name, parents, isDecommissioned}
         );
         return response.data;
     } catch (error) {
@@ -27,13 +27,13 @@ export async function crete_company(name, parents) {
     }
 }
 
-export async function put_company(id,name, parents) {
+export async function put_company(id, name, parents, isDecommissioned = false) {
     if (parents==="")
         parents= null
     try {
         const response = await api.put(
             '/companies',
-            {id, name, parents}
+            {id, name, parents, isDecommissioned}
         );
         return response.data;
     } catch (error) {
