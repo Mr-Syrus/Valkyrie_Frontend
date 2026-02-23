@@ -1,5 +1,9 @@
 import axios from 'axios';
 import { useNotifications } from '@/composables/useNotifications.js';
+import {useRoute, useRouter} from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
 
 const { addNotification } = useNotifications();
 
@@ -21,7 +25,10 @@ api.interceptors.response.use(
                 ? data.trim()
                 : data?.detail || data?.message || '';
             if (status === 401) {
-                addNotification(detail || 'Необходима авторизация (401)');
+                if (route.name !== 'login') {
+                    addNotification(detail || 'Необходима авторизация (401)');
+                    router.push({name: 'login'}).then(c=>console.log(c));
+                }
             } else if (status === 403) {
                 addNotification(detail || 'Доступ запрещён (403)');
             } else if (status === 404) {
