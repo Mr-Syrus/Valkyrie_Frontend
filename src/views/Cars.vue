@@ -593,10 +593,10 @@ onUnmounted(() => {
       <div class="modal-content">
         <div class="modal-header">
           <template v-if="form_id == null">
-            <h5 class="modal-title">Добавление автомобиль</h5>
+            <h5 class="modal-title">Добавить автомобиль</h5>
           </template>
           <template v-else>
-            <h5 class="modal-title">Редактирование автомобиль</h5>
+            <h5 class="modal-title">Редактировать автомобиль</h5>
           </template>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>

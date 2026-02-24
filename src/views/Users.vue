@@ -240,7 +240,7 @@ function editItem(id) {
     username: user.user.username,
 
     firstname: user.user.firstname,
-    lastname: user.user.username,
+    lastname: user.user.lastname,
     surname: user.user.surname,
 
     decommissioned: user.user.decommissioned,
@@ -463,7 +463,7 @@ onUnmounted(() => {
             <h5 class="modal-title">Добавить сотрудника</h5>
           </template>
           <template v-else>
-            <h5 class="modal-title">Редактирование сотрудника</h5>
+            <h5 class="modal-title">Редактировать сотрудника</h5>
           </template>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
