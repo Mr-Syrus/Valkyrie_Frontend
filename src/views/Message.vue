@@ -19,7 +19,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 2500,
-        q: { min: 0, max: 2500 },
+        q: {min: 0, max: 2500},
         teg: 'engine_torque',
       },
       {
@@ -28,7 +28,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 100,
-        q: { min: 0, max: 100 },
+        q: {min: 0, max: 100},
         teg: 'engine_load',
       },
       {
@@ -37,7 +37,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 10,
-        q: { min: 0, max: 10 },
+        q: {min: 0, max: 10},
         teg: 'engine_oil_pressure',
       },
       {
@@ -46,7 +46,7 @@ const sections = ref([
         type: 'range',
         min: -20,
         max: 140,
-        q: { min: -20, max: 140 },
+        q: {min: -20, max: 140},
         teg: 'engine_il_temperature',
       },
       {
@@ -55,7 +55,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 1000,
-        q: { min: 0, max: 1000 },
+        q: {min: 0, max: 1000},
         teg: 'exhaust_gas_temperature',
       },
       {
@@ -64,7 +64,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 100000,
-        q: { min: 0, max: 100000 },
+        q: {min: 0, max: 100000},
         teg: 'engine_operating_hours',
       },
     ]
@@ -79,7 +79,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 100,
-        q: { min: 0, max: 100 },
+        q: {min: 0, max: 100},
         teg: 'remaining_fuel_real_time',
       },
       {
@@ -88,7 +88,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 100,
-        q: { min: 0, max: 100 },
+        q: {min: 0, max: 100},
         teg: 'remaining_fuel',
       },
     ]
@@ -103,7 +103,7 @@ const sections = ref([
         type: 'range',
         min: 0,
         max: 400,
-        q: { min: 0, max: 400 },
+        q: {min: 0, max: 400},
         teg: 'pressure_hydraulic_system',
       },
       {
@@ -112,7 +112,7 @@ const sections = ref([
         type: 'range',
         min: -20,
         max: 120,
-        q: { min: -20, max: 120 },
+        q: {min: -20, max: 120},
         teg: 'hydraulic_fluid_temperature',
       },
     ]
@@ -140,7 +140,7 @@ const sections = ref([
         type: 'range',
         min: 9,
         max: 36,
-        q: { min: 9, max: 36 },
+        q: {min: 9, max: 36},
         teg: 'battery_voltage',
       },
     ]
@@ -201,7 +201,7 @@ async function sendRequest() {
   items_messages.value = items_messages_ar.value.reduce((acc, item) => {
     if (!item.event) return acc
     const platformId = item.event.platformId
-    
+
     if (!acc[platformId]) {
       acc[platformId] = [];
     }
@@ -407,8 +407,12 @@ onUnmounted(() => {
                 <img src="@/assets/triangle.svg" alt="triangle"
                      style="width: 20px; height: 20px; margin-right: 8px;"/>
                 <div v-if="platformId">
-                  <span class="fw-bold">Площадка {{ items_platform_id_to_name[platformId] || `ID: ${platformId}` }}</span>
-                  <div class="text-muted small">Адрес площадки: {{ items_platform_id_to_address[platformId] || 'Не указан' }}</div>
+                  <span class="fw-bold">Площадка {{
+                      items_platform_id_to_name[platformId] || `ID: ${platformId}`
+                    }}</span>
+                  <div class="text-muted small">Адрес площадки:
+                    {{ items_platform_id_to_address[platformId] || 'Не указан' }}
+                  </div>
                 </div>
               </div>
 
@@ -423,8 +427,12 @@ onUnmounted(() => {
                        @click="openEventModal(msg)">
                     <div class="text-start"><strong>Тип:</strong> {{ msg.event.typeEvent?.name || 'Не указан' }}</div>
                     <div class="text-start"><strong>Машина:</strong> {{ msg.event.car?.number || 'Не указана' }}</div>
-                    <div class="text-start"><strong>Дата:</strong> {{ new Date(msg.event.dateTime).toLocaleString('ru-RU') }}</div>
-                    <div class="text-start"><strong>Координаты:</strong> {{ msg.event.latitude }}, {{ msg.event.longitude }}</div>
+                    <div class="text-start"><strong>Дата:</strong>
+                      {{ new Date(msg.event.dateTime).toLocaleString('ru-RU') }}
+                    </div>
+                    <div class="text-start"><strong>Координаты:</strong> {{ msg.event.latitude }},
+                      {{ msg.event.longitude }}
+                    </div>
                     <div class="text-start mt-2">
                       <template v-if="msg.event.typeEvent?.name !== 'SOS'">
                         <span class="badge bg-secondary">Не требует реакции</span>
@@ -461,10 +469,13 @@ onUnmounted(() => {
           <h6 class="fw-bold mb-2">Основная информация</h6>
           <div class="row mb-3">
             <div class="col-6">
-              <div class="mb-2"><strong>Тип события:</strong> {{ selectedMsg.event.typeEvent?.name || 'Не указан' }}</div>
+              <div class="mb-2"><strong>Тип события:</strong> {{ selectedMsg.event.typeEvent?.name || 'Не указан' }}
+              </div>
               <div class="mb-2"><strong>Гос. номер:</strong> {{ selectedMsg.event.car?.number || 'Не указана' }}</div>
               <div class="mb-2"><strong>Модель:</strong> {{ selectedMsg.event.car?.modelCar?.name || '—' }}</div>
-              <div class="mb-2"><strong>Дата и время:</strong> {{ new Date(selectedMsg.event.dateTime).toLocaleString('ru-RU') }}</div>
+              <div class="mb-2"><strong>Дата и время:</strong>
+                {{ new Date(selectedMsg.event.dateTime).toLocaleString('ru-RU') }}
+              </div>
             </div>
             <div class="col-6">
               <div class="mb-2"><strong>Широта:</strong> {{ displayVal(selectedMsg.event.latitude) }}</div>
@@ -498,52 +509,74 @@ onUnmounted(() => {
           <div class="row">
             <div class="col-6">
               <div class="mb-2"><strong>Крутящий момент:</strong> {{ displayVal(selectedMsg.event.engineTorque) }}</div>
-              <div class="mb-2"><strong>Нагрузка двигателя (%):</strong> {{ displayVal(selectedMsg.event.engineLoad) }}</div>
-              <div class="mb-2"><strong>Давление масла:</strong> {{ displayVal(selectedMsg.event.engineOilPressure) }}</div>
-              <div class="mb-2"><strong>Температура масла:</strong> {{ displayVal(selectedMsg.event.engineILTemperature) }}</div>
-              <div class="mb-2"><strong>Температура выхлопных газов (EGT):</strong> {{ displayVal(selectedMsg.event.exhaustGasTemperature) }}</div>
-              <div class="mb-2"><strong>Моточасы:</strong> {{ displayVal(selectedMsg.event.engineOperatingHours) }}</div>
-              <div class="mb-2"><strong>Температура трансмиссии:</strong> {{ displayVal(selectedMsg.event.transmissionTemperature) }}</div>
+              <div class="mb-2"><strong>Нагрузка двигателя (%):</strong> {{ displayVal(selectedMsg.event.engineLoad) }}
+              </div>
+              <div class="mb-2"><strong>Давление масла:</strong> {{ displayVal(selectedMsg.event.engineOilPressure) }}
+              </div>
+              <div class="mb-2"><strong>Температура масла:</strong> {{
+                  displayVal(selectedMsg.event.engineILTemperature)
+                }}
+              </div>
+              <div class="mb-2"><strong>Температура выхлопных газов (EGT):</strong>
+                {{ displayVal(selectedMsg.event.exhaustGasTemperature) }}
+              </div>
+              <div class="mb-2"><strong>Моточасы:</strong> {{ displayVal(selectedMsg.event.engineOperatingHours) }}
+              </div>
+              <div class="mb-2"><strong>Температура трансмиссии:</strong>
+                {{ displayVal(selectedMsg.event.transmissionTemperature) }}
+              </div>
             </div>
             <div class="col-6">
-              <div class="mb-2"><strong>Расход топлива (реальн.):</strong> {{ displayVal(selectedMsg.event.remainingFuelRealTime) }}</div>
-              <div class="mb-2"><strong>Остаток топлива (%):</strong> {{ displayVal(selectedMsg.event.remainingFuel) }}</div>
-              <div class="mb-2"><strong>Давление в гидросистеме:</strong> {{ displayVal(selectedMsg.event.pressureHydraulicSystem) }}</div>
-              <div class="mb-2"><strong>Температура гидр. жидкости:</strong> {{ displayVal(selectedMsg.event.hydraulicFluidTemperature) }}</div>
-              <div class="mb-2"><strong>Напряжение АКБ:</strong> {{ displayVal(selectedMsg.event.batteryVoltage) }}</div>
+              <div class="mb-2"><strong>Расход топлива (реальн.):</strong>
+                {{ displayVal(selectedMsg.event.remainingFuelRealTime) }}
+              </div>
+              <div class="mb-2"><strong>Остаток топлива (%):</strong> {{ displayVal(selectedMsg.event.remainingFuel) }}
+              </div>
+              <div class="mb-2"><strong>Давление в гидросистеме:</strong>
+                {{ displayVal(selectedMsg.event.pressureHydraulicSystem) }}
+              </div>
+              <div class="mb-2"><strong>Температура гидр. жидкости:</strong>
+                {{ displayVal(selectedMsg.event.hydraulicFluidTemperature) }}
+              </div>
+              <div class="mb-2"><strong>Напряжение АКБ:</strong> {{ displayVal(selectedMsg.event.batteryVoltage) }}
+              </div>
             </div>
           </div>
 
           <!-- История реакций -->
-          <br>
-          <h6 class="fw-bold mb-2">История реакций</h6>
-          <div v-if="selectedMsg.historys?.length" class="mb-3">
-            <div
-                v-for="h in selectedMsg.historys"
-                :key="h.id"
-                class="d-flex align-items-start gap-2 mb-2 p-2"
-                style="border-radius: 6px; background-color: #f8f9fa; border-left: 4px solid;"
-                :style="{ borderColor: h.answer ? '#198754' : '#dc3545' }"
-            >
-              <div class="flex-grow-1">
-                <div class="d-flex justify-content-between">
+
+          <template v-if="selectedMsg.event.typeEvent?.name=='SOS'">
+            <br>
+
+            <h6 class="fw-bold mb-2">История реакций</h6>
+            <div v-if="selectedMsg.historys?.length" class="mb-3">
+              <div
+                  v-for="h in selectedMsg.historys"
+                  :key="h.id"
+                  class="d-flex align-items-start gap-2 mb-2 p-2"
+                  style="border-radius: 6px; background-color: #f8f9fa; border-left: 4px solid;"
+                  :style="{ borderColor: h.answer ? '#198754' : '#dc3545' }"
+              >
+                <div class="flex-grow-1">
+                  <div class="d-flex justify-content-between">
                   <span class="fw-semibold">
                     {{ h.user?.lastname }} {{ h.user?.firstname }} {{ h.user?.surname }}
                   </span>
-                  <span class="text-muted small">
+                    <span class="text-muted small">
                     {{ new Date(h.dataTime).toLocaleString('ru-RU') }}
                   </span>
-                </div>
-                <div class="mt-1">
+                  </div>
+                  <div class="mt-1">
                   <span :class="h.answer ? 'badge bg-success' : 'badge bg-danger'">
                     {{ h.answer ? 'Принято' : 'Отклонено' }}
                   </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div v-else class="text-muted mb-3 small">Реакций пока нет</div>
+            <div v-else class="text-muted mb-3 small">Реакций пока нет</div>
 
+          </template>
         </div>
 
         <div class="modal-footer">
