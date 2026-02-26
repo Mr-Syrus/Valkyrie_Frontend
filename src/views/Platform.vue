@@ -67,7 +67,7 @@ async function sendRequest() {
 
   items_companies_ar.value = filtered
   items_companies.value = filtered.reduce((acc, item) => {
-    const companyId = item.сompanyId;
+    const companyId = item.companyId;
     if (!acc[companyId]) {
       acc[companyId] = [];
     }
