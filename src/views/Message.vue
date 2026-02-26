@@ -316,10 +316,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Фильтры -->
-      <div :class="`col-${isCollapsed ? 1 : 3} bg-color-forms p-3`" style="transition: width 0.3s;">
+  <div class="page-layout">
+    <!-- Фильтры -->
+    <div class="sidebar-panel bg-color-forms p-3" :style="{ width: isCollapsed ? '60px' : '260px' }" style="transition: width 0.3s;">
         <div v-if="!isCollapsed">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="m-0">Фильтры</h5>
@@ -416,8 +415,8 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Контент -->
-      <div class="col p-3">
+    <!-- Контент -->
+    <div class="content-panel p-3">
         <div class="bg-secondary w-100 mb-3" style="height: 4px;"></div>
 
         <div class="container">
@@ -472,7 +471,6 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 
@@ -614,6 +612,31 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.page-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar-panel {
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+.content-panel {
+  flex: 1;
+  overflow-y: auto;
+  height: 100%;
+  min-width: 0;
+}
+
+.bg-color-forms {
+  background-color: #f8f9fa;
+}
+
 .collapse-icon {
   width: 16px;
   height: 16px;
