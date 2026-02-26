@@ -150,7 +150,7 @@
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue';
 import { api } from '@/api/main_axios.js';
-import sirenSrc from '@/assets/fantastic-siren.mp3';
+// import sirenSrc from '@/assets/fantastic-siren.mp3';
 
 const props = defineProps({
   eventData: {
@@ -166,7 +166,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'reply']);
 
 const isVisible = ref(false);
-const countdown = ref(600); // 20 минут = 1200 секун, 10 минут = 600 секунд
+const countdown = ref(300); // 20 минут = 1200 секун, 10 минут = 600 секунд, 5 минут = 300 секунд
 let countdownTimer = null;
 
 // === Сирена ===
@@ -184,15 +184,15 @@ const unlockAndPlay = () => {
 };
 
 const startSiren = () => {
-  if (siren) return;
-  siren = new Audio(sirenSrc);
-  siren.loop = true;
-  siren.play().catch(() => {
-    // Автовоспроизведение заблокировано — ждём первого взаимодействия
-    pendingSiren = true;
-    document.addEventListener('click', unlockAndPlay);
-    document.addEventListener('keydown', unlockAndPlay);
-  });
+  // if (siren) return;
+  // siren = new Audio(sirenSrc);
+  // siren.loop = true;
+  // siren.play().catch(() => {
+  //   // Автовоспроизведение заблокировано — ждём первого взаимодействия
+  //   pendingSiren = true;
+  //   document.addEventListener('click', unlockAndPlay);
+  //   document.addEventListener('keydown', unlockAndPlay);
+  // });
 };
 
 const stopSiren = () => {
@@ -264,7 +264,7 @@ const formatKey = (key) => {
 };
 
 const startCountdown = () => {
-  countdown.value = 600; // 20 минут = 1200 секун, 10 минут = 600 секунд
+  countdown.value = 300; // 20 минут = 1200 секун, 10 минут = 600 секунд, 5 минут = 300 секунд
   countdownTimer = setInterval(() => {
     countdown.value--;
     if (countdown.value < 0) {
