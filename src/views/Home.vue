@@ -20,7 +20,7 @@ const squares = {
   "Сотрудники": "/users",
   "Компании": "/companies",
   "Площадки": "/platform",
-  "Сообщение": "/message"
+  "Сообщения": "/message"
 };
 </script>
 
