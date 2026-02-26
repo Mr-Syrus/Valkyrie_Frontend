@@ -1,4 +1,5 @@
 <template>
+  <div class="home-wrapper">
   <div class="container mt-4">
     <div class="row g-3">
       <div
@@ -11,6 +12,7 @@
         </router-link>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -25,6 +27,12 @@ const squares = {
 </script>
 
 <style scoped>
+.home-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
 .square {
   width: 100%;
   aspect-ratio: 1 / 1;

@@ -5,11 +5,15 @@
     --color-text: #353535;
     --color-forms: #848C8E;
     --color-background: #F3F3F4;
+    --navbar-height: 82px;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
 
 body {
-  min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
   transition:
@@ -33,4 +37,16 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
 }

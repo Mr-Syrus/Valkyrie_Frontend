@@ -73,10 +73,12 @@ onUnmounted(() => {
     <Login />
     <AppNotifications />
   </div>
-  <div v-else>
+  <div v-else style="height: 100%; display: flex; flex-direction: column;">
     <Navbar />
-    <router-view />
-    
+    <div class="page-content">
+      <router-view />
+    </div>
+
     <!-- Всплывающее окно для событий через WebSocket -->
     <PopApTrivohaAi2 
       v-if="currentEvent"
