@@ -240,6 +240,30 @@ function displayVal(v) {
   return v !== null && v !== undefined ? v : '—'
 }
 
+function displayInterval(v) {
+  if (v === null || v === undefined) return '—';
+
+  // если это не строка — вернуть как есть
+  if (typeof v !== 'string') return v;
+
+  if (!v) return '—';
+
+  let days = 0;
+  let timePart = v;
+
+  if (v.includes('.')) {
+    const parts = v.split('.');
+    days = parseInt(parts[0], 10);
+    timePart = parts[1];
+  }
+
+  if (days > 0) {
+    return `${days} дней ${timePart}`;
+  }
+
+  return timePart;
+}
+
 function openEventModal(msg) {
   selectedMsg.value = msg
   const modalEl = document.getElementById('eventViewModal')
@@ -520,7 +544,7 @@ onUnmounted(() => {
               <div class="mb-2"><strong>Температура выхлопных газов (EGT):</strong>
                 {{ displayVal(selectedMsg.event.exhaustGasTemperature) }}
               </div>
-              <div class="mb-2"><strong>Моточасы:</strong> {{ displayVal(selectedMsg.event.engineOperatingHours) }}
+              <div class="mb-2"><strong>Моточасы:</strong> {{ displayInterval(selectedMsg.event.engineOperatingHours) }}
               </div>
               <div class="mb-2"><strong>Температура трансмиссии:</strong>
                 {{ displayVal(selectedMsg.event.transmissionTemperature) }}

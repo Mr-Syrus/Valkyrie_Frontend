@@ -8,13 +8,13 @@
 
       <div class="alert-header">
         <span class="car-number">Машина с номером {{ eventData?.Car?.Number || '???' }}</span>
-        <span class="object-code">объект {{ eventData?.Platforms?.Name || '???' }}</span>
+        <span class="object-code">Объект {{ eventData?.Platforms?.Name || '???' }}</span>
       </div>
 
       <div class="alert-footer">
         <button class="reply-btn" @click="handleReply">Ответить</button>
         <div class="redirect-timer">
-          <span v-if="countdown > 0">Будет передана другому через {{ Math.floor(countdown / 60) }}:{{ String(countdown % 60).padStart(2, '0') }}</span>
+          <span v-if="countdown > 0">Будет передана следующему узлу через {{ Math.floor(countdown / 60) }}:{{ String(countdown % 60).padStart(2, '0') }}</span>
           <span v-else style="color: #ff9800; font-weight: bold;">Передана другому оператору</span>
         </div>
       </div>
@@ -264,7 +264,7 @@ const formatKey = (key) => {
 };
 
 const startCountdown = () => {
-  countdown.value = 1200; // 20 минут
+  countdown.value = 600; // 20 минут = 1200 секун, 10 минут = 600 секунд
   countdownTimer = setInterval(() => {
     countdown.value--;
     if (countdown.value < 0) {
