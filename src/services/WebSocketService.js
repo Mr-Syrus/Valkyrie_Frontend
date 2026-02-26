@@ -1,7 +1,7 @@
 class WebSocketService {
     constructor() {
         this.socket = null;
-        this.reconnectInterval = 5000; // 5 секунд
+        this.reconnectInterval = 30*1000; // 5 секунд
         this.reconnectTimer = null;
         this.messageHandlers = [];
         this.isManualClose = false;
