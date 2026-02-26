@@ -590,7 +590,7 @@ onUnmounted(() => {
                   </div>
                   <div class="mt-1">
                   <span :class="h.answer ? 'badge bg-success' : 'badge bg-danger'">
-                    {{ h.answer ? 'Принято' : 'Отклонено' }}
+                    {{ h.answer ? 'Принято' : 'Нет ответа' }}
                   </span>
                   </div>
                 </div>
