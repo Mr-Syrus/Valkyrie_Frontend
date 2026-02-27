@@ -297,6 +297,8 @@ function toggleCollapse() {
   isCollapsed.value = !isCollapsed.value
 }
 
+let autoRefreshTimer = null
+
 onMounted(async () => {
   await sendRequest()
   const modalEl = document.getElementById('eventViewModal')
@@ -305,9 +307,16 @@ onMounted(async () => {
       selectedMsg.value = null
     })
   }
+  autoRefreshTimer = setInterval(() => {
+    timeSendRequest()
+  }, 1000)
 })
 
 onUnmounted(() => {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer)
+    autoRefreshTimer = null
+  }
   const modalEl = document.getElementById('eventViewModal')
   if (modalEl) {
     bootstrap.Modal.getOrCreateInstance(modalEl).dispose()
