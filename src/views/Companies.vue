@@ -122,6 +122,13 @@ function hideDropdown() {
   setTimeout(() => showDropdown.value = false, 150)
 }
 
+// === Открытие модалки для добавления ===
+function openAddModal() {
+  const modalEl = document.getElementById('addCompanyModal')
+  const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
+  modalInstance.show()
+}
+
 // === Редактирование ===
 function editItem(id) {
   console.log('Редактируем компанию', id)
@@ -244,8 +251,7 @@ onUnmounted(() => {
           <button
               class="btn"
               :style="{ backgroundColor: 'var(--color-forms)', color: '#000' }"
-              data-bs-toggle="modal"
-              data-bs-target="#addCompanyModal"
+              @click="openAddModal"
           >
             Добавить компанию
           </button>

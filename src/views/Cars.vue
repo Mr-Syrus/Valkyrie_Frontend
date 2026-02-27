@@ -365,6 +365,14 @@ function hideDropdownPlatform() {
   setTimeout(() => { showDropdownPlatform.value = false }, 150)
 }
 
+// === Открытие модалки для добавления ===
+function openAddModal() {
+  resetForm()
+  const modalEl = document.getElementById('addCompanyModal')
+  const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl)
+  modalInstance.show()
+}
+
 // === Редактирование ===
 function editItem(id) {
   const car = items_cars_ar.value.find(item => item.id === id)
@@ -536,8 +544,7 @@ onUnmounted(() => {
           <button
               class="btn"
               :style="{ backgroundColor: 'var(--color-forms)', color: '#000' }"
-              data-bs-toggle="modal"
-              data-bs-target="#addCompanyModal"
+              @click="openAddModal"
           >
             Добавить автомобиль
           </button>
