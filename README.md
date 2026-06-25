@@ -1,4 +1,4 @@
-# Backend of a telemetry, archiving, and emergency response system for heavy equipment
+# Frontend of a telemetry, archiving, and emergency response system for heavy equipment
 
 ## Project Setup
 
